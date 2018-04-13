@@ -1,7 +1,5 @@
 void Move_step(){
 	for(int v = 0;  v < N; v++){
-
-      
         	randP = uni(gen)*N;
         	if (randP==N){
             		v--;
@@ -193,7 +191,6 @@ void Move_step(){
 						}
 					}
 				}
-
 			
 				if(!inside){
 
@@ -519,16 +516,6 @@ void Compression_step(){
 			NCell.resize(0);
 			NPart.resize(0);
 
-
-			dsx = MovedParticle.pos[0]-MovedParticle.dist*MovedParticle.ori[0];
-			dsxN = MovedParticle.pos[0]+MovedParticle.dist*MovedParticle.ori[0];
-
-			dsy = MovedParticle.pos[1]-MovedParticle.dist*MovedParticle.ori[1];
-			dsyN = MovedParticle.pos[1]+MovedParticle.dist*MovedParticle.ori[1];
-
-			dsz = MovedParticle.pos[2]-MovedParticle.dist*MovedParticle.ori[2];
-			dszN = MovedParticle.pos[2]+MovedParticle.dist*MovedParticle.ori[2];
-
 			int k = MovedParticle.cell;
 
 			vv = Config.head[k];
@@ -550,6 +537,8 @@ void Compression_step(){
 			    
 				while(vv != -1 && !inside){
 					newvv = vv;
+					MovedParticle.dist*=-1;	
+
 					if(newvv >= Config.Nc ) newvv -= Config.Nc; 
 					if(v < newvv && !Config.part[newvv].already) overlapPear(); 
 
@@ -557,9 +546,16 @@ void Compression_step(){
 				}
 				NCell.push_back(k);
 				Config.usedCell[k]=true;
+				MovedParticle.dist*=-1;	
 			}
 
 			if(!inside){
+				dsx = MovedParticle.pos[0]-MovedParticle.dist*MovedParticle.ori[0];
+
+				dsy = MovedParticle.pos[1]-MovedParticle.dist*MovedParticle.ori[1];
+
+				dsz = MovedParticle.pos[2]-MovedParticle.dist*MovedParticle.ori[2];
+
 				if(dsx < 0){
 					sx[0] = Config.W[0]-1;
 					sx[1] = sx[0] -1;
@@ -628,9 +624,15 @@ void Compression_step(){
 				}
 			}
 
-
-		
 			if(!inside){
+
+				dsxN = MovedParticle.pos[0]+MovedParticle.dist*MovedParticle.ori[0];
+
+				dsyN = MovedParticle.pos[1]+MovedParticle.dist*MovedParticle.ori[1];
+
+				dszN = MovedParticle.pos[2]+MovedParticle.dist*MovedParticle.ori[2];
+
+
 				if(dsxN < 0){
 					sxN[0] = Config.W[0]-1;
 					sxN[1] = sxN[0] -1;
@@ -678,9 +680,7 @@ void Compression_step(){
 			
 				if(sx[1] != sxN[1] || sy[1] != syN[1] || sz[1] != szN[1] ){
 
-					std::swap(dsx,dsxN);
-					std::swap(dsy,dsyN);
-					std::swap(dsz,dszN);
+					MovedParticle.dist*=-1;	
 
 					for (int ix=0; ix < 3 && !inside; ix++){
 
@@ -701,6 +701,7 @@ void Compression_step(){
 							}
 						}
 					}
+					MovedParticle.dist*=-1;	
 				}
 			}
 			for( vv = 0; vv < NPart.size(); vv++) Config.part[NPart[vv]].already=false;
