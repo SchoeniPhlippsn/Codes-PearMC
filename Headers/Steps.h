@@ -88,16 +88,7 @@ void Move_step(){
 				NCell.resize(0);
 				NPart.resize(0);
 				first=true;
-
-
-				dsx = MovedParticle.pos[0]-MovedParticle.dist*MovedParticle.ori[0];
-				dsxN = MovedParticle.pos[0]+MovedParticle.dist*MovedParticle.ori[0];
-
-				dsy = MovedParticle.pos[1]-MovedParticle.dist*MovedParticle.ori[1];
-				dsyN = MovedParticle.pos[1]+MovedParticle.dist*MovedParticle.ori[1];
-
-				dsz = MovedParticle.pos[2]-MovedParticle.dist*MovedParticle.ori[2];
-				dszN = MovedParticle.pos[2]+MovedParticle.dist*MovedParticle.ori[2];
+				vorzeichen = 1;
 
 				int k = MovedParticle.cell;
 
@@ -113,6 +104,7 @@ void Move_step(){
 				NCell.push_back(k);
 				Config.usedCell[k]=true;
 
+				int kN = MovedParticle.cell;
 				if( MovedParticle.cellN != MovedParticle.cell && !inside){
 					k = MovedParticle.cellN;
 
@@ -131,6 +123,16 @@ void Move_step(){
 
 
 				if(!inside){
+
+				dsx = MovedParticle.pos[0]-MovedParticle.dist*MovedParticle.ori[0];
+				dsxN = MovedParticle.pos[0]+MovedParticle.dist*MovedParticle.ori[0];
+
+				dsy = MovedParticle.pos[1]-MovedParticle.dist*MovedParticle.ori[1];
+				dsyN = MovedParticle.pos[1]+MovedParticle.dist*MovedParticle.ori[1];
+
+				dsz = MovedParticle.pos[2]-MovedParticle.dist*MovedParticle.ori[2];
+				dszN = MovedParticle.pos[2]+MovedParticle.dist*MovedParticle.ori[2];
+
 					if(dsx < 0){
 						sx[0] = Config.W[0]-1;
 						sx[1] = sx[0] -1;
@@ -202,6 +204,13 @@ void Move_step(){
 			
 				if(!inside){
 					first=false;
+
+					dsxN = MovedParticle.pos[0]+MovedParticle.dist*MovedParticle.ori[0];
+
+					dsyN = MovedParticle.pos[1]+MovedParticle.dist*MovedParticle.ori[1];
+
+					dszN = MovedParticle.pos[2]+MovedParticle.dist*MovedParticle.ori[2];
+
 					if(dsxN < 0){
 						sxN[0] = Config.W[0]-1;
 						sxN[1] = sxN[0] -1;
@@ -249,10 +258,7 @@ void Move_step(){
 
 					if(sx[1] != sxN[1] || sy[1] != syN[1] || sz[1] != szN[1] ){
 						
-						std::swap(dsx,dsxN);
-						std::swap(dsy,dsyN);
-						std::swap(dsz,dszN);
-
+						vorzeichen=-1;
 						for (int ix=0; ix < 3 && !inside; ix++){
 
 							for (int iy=0; iy < 3 && !inside; iy++){

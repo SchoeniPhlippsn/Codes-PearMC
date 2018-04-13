@@ -81,7 +81,34 @@ void overlapPear (){
 	std::vector<double> R (3);
 	firstTest = false;
 
-	R[0] = Config.part[newvv].pos[0] - dsx; // boundary correction
+	//R[0] = Config.part[newvv].pos[0] - dsx; // boundary correction
+	//if (R[0] > Config.l_2[0]){  
+	//	R[0] -= Config.l[0];
+	//}else{ 
+	//	if (R[0] < -Config.l_2[0]){  
+	//		R[0] += Config.l[0];
+	//	}
+	//}
+
+	//R[1] = Config.part[newvv].pos[1] - dsy; // boundary correction
+	//if (R[1] > Config.l_2[1]){  
+	//	R[1] -= Config.l[1];
+	//}else{ 
+	//	if (R[1] < -Config.l_2[1]){ 
+	//		R[1] += Config.l[1];
+	//	}
+	//}
+
+	//R[2] = Config.part[newvv].pos[2] - dsz; // boundary correction
+	//if (R[2] > Config.l_2[2]){ 
+	//	R[2] -= Config.l[2];
+	//}else{ 
+	//	if (R[2] < -Config.l_2[2]){ 
+	//		R[2] += Config.l[2];
+	//	}
+	//}
+
+	R[0] = Config.part[newvv].pos[0] - MovedParticle.pos[0]; // boundary correction
 	if (R[0] > Config.l_2[0]){  
 		R[0] -= Config.l[0];
 	}else{ 
@@ -90,7 +117,7 @@ void overlapPear (){
 		}
 	}
 
-	R[1] = Config.part[newvv].pos[1] - dsy; // boundary correction
+	R[1] = Config.part[newvv].pos[1] - MovedParticle.pos[1]; // boundary correction
 	if (R[1] > Config.l_2[1]){  
 		R[1] -= Config.l[1];
 	}else{ 
@@ -99,7 +126,7 @@ void overlapPear (){
 		}
 	}
 
-	R[2] = Config.part[newvv].pos[2] - dsz; // boundary correction
+	R[2] = Config.part[newvv].pos[2] - MovedParticle.pos[2]; // boundary correction
 	if (R[2] > Config.l_2[2]){ 
 		R[2] -= Config.l[2];
 	}else{ 
@@ -108,48 +135,22 @@ void overlapPear (){
 		}
 	}
 
-	double RU = R[0]*Config.part[newvv].ori[0] + R[1]*Config.part[newvv].ori[1]+R[2]*Config.part[newvv].ori[2];
+	double UU = vorzeichen*MovedParticle.dist*(MovedParticle.ori[0]*Config.part[newvv].ori[0] + MovedParticle.ori[1]*Config.part[newvv].ori[1]+MovedParticle.ori[2]*Config.part[newvv].ori[2]);
+	double RU = R[0]*Config.part[newvv].ori[0] + R[1]*Config.part[newvv].ori[1]+R[2]*Config.part[newvv].ori[2]+UU;
 	RU = RU*RU;
 	
 	if( RU < rcut_PII ){
-		double Rsq = R[0]*R[0]+R[1]*R[1]+R[2]*R[2] -RU;
+		double Rsq = (R[0]+vorzeichen*MovedParticle.dist*MovedParticle.ori[0])*(R[0]+vorzeichen*MovedParticle.dist*MovedParticle.ori[0])+(R[1]+vorzeichen*MovedParticle.dist*MovedParticle.ori[1])*(R[1]+vorzeichen*MovedParticle.dist*MovedParticle.ori[1])+(R[2]+vorzeichen*MovedParticle.dist*MovedParticle.ori[2])*(R[2]+vorzeichen*MovedParticle.dist*MovedParticle.ori[2]) -RU;
 		if( Rsq < rcut_PT ) firstTest=true;
 	}
 
 	if(!firstTest && first){
 
-		R[0] = Config.part[newvv].pos[0] - dsxN; // boundary correction
-		if (R[0] > Config.l_2[0]){  
-			R[0] -= Config.l[0];
-		}else{ 
-			if (R[0] < -Config.l_2[0]){  
-				R[0] += Config.l[0];
-			}
-		}
-
-		R[1] = Config.part[newvv].pos[1] - dsyN; // boundary correction
-		if (R[1] > Config.l_2[1]){  
-			R[1] -= Config.l[1];
-		}else{ 
-			if (R[1] < -Config.l_2[1]){ 
-				R[1] += Config.l[1];
-			}
-		}
-
-		R[2] = Config.part[newvv].pos[2] - dszN; // boundary correction
-		if (R[2] > Config.l_2[2]){ 
-			R[2] -= Config.l[2];
-		}else{ 
-			if (R[2] < -Config.l_2[2]){ 
-				R[2] += Config.l[2];
-			}
-		}
-
-		RU = R[0]*Config.part[newvv].ori[0] + R[1]*Config.part[newvv].ori[1]+R[2]*Config.part[newvv].ori[2];
+		RU = R[0]*Config.part[newvv].ori[0] + R[1]*Config.part[newvv].ori[1]+R[2]*Config.part[newvv].ori[2] - UU;
 		RU = RU*RU;
 		
 		if( RU < rcut_PII ){
-			double Rsq = R[0]*R[0]+R[1]*R[1]+R[2]*R[2] -RU;
+		double Rsq = (R[0]-MovedParticle.dist*MovedParticle.ori[0])*(R[0]-MovedParticle.dist*MovedParticle.ori[0])+(R[1]-MovedParticle.dist*MovedParticle.ori[1])*(R[1]-MovedParticle.dist*MovedParticle.ori[1])+(R[2]-MovedParticle.dist*MovedParticle.ori[2])*(R[2]-MovedParticle.dist*MovedParticle.ori[2]) -RU;
 			if( Rsq < rcut_PT ) firstTest=true;
 		}
 	}
@@ -158,32 +159,6 @@ void overlapPear (){
 		NPart.push_back(newvv);
 		Config.part[newvv].already=true;
 
-		R[0] = Config.part[newvv].pos[0] - MovedParticle.pos[0]; // boundary correction
-		if (R[0] > Config.l_2[0]){  
-			R[0] -= Config.l[0];
-		}else{ 
-			if (R[0] < -Config.l_2[0]){  
-				R[0] += Config.l[0];
-			}
-		}
-
-		R[1] = Config.part[newvv].pos[1] - MovedParticle.pos[1]; // boundary correction
-		if (R[1] > Config.l_2[1]){  
-			R[1] -= Config.l[1];
-		}else{ 
-			if (R[1] < -Config.l_2[1]){ 
-				R[1] += Config.l[1];
-			}
-		}
-
-		R[2] = Config.part[newvv].pos[2] - MovedParticle.pos[2]; // boundary correction
-		if (R[2] > Config.l_2[2]){ 
-			R[2] -= Config.l[2];
-		}else{ 
-			if (R[2] < -Config.l_2[2]){ 
-				R[2] += Config.l[2];
-			}
-		}
 		Config.part[newvv].trans[0][3] = R[0];	
 		Config.part[newvv].trans[1][3] = R[1];	
 		Config.part[newvv].trans[2][3] = R[2];	
