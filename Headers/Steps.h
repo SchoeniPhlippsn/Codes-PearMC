@@ -25,25 +25,20 @@ void Move_step(){
                 		 Case = 3*uni(gen);
                 		switch(Case){
                 			case 0:
-                    			MovedParticle.ori[0] = cosphi*MovedParticle.ori[0] + sinphi*MovedParticle.ori[1];
-                    			MovedParticle.ori[1] = -sinphi*MovedParticle.ori[0] + cosphi*MovedParticle.ori[1];
+                    			MovedParticle.ori[0] = cosphi*Config.part[randP].ori[0] + sinphi*Config.part[randP].ori[1];
+                    			MovedParticle.ori[1] = -sinphi*Config.part[randP].ori[0] + cosphi*Config.part[randP].ori[1];
                     			break;
 
                 			case 1:
-                    			MovedParticle.ori[2] = cosphi*MovedParticle.ori[2] + sinphi*MovedParticle.ori[0];
-                    			MovedParticle.ori[0] = -sinphi*MovedParticle.ori[2] + cosphi*MovedParticle.ori[0];
+                    			MovedParticle.ori[2] = cosphi*Config.part[randP].ori[2] + sinphi*Config.part[randP].ori[0];
+                    			MovedParticle.ori[0] = -sinphi*Config.part[randP].ori[2] + cosphi*Config.part[randP].ori[0];
                     			break;
 
                 			case 2:
-                    			MovedParticle.ori[1] = cosphi*MovedParticle.ori[1] + sinphi*MovedParticle.ori[2];
-                    			MovedParticle.ori[2] = -sinphi*MovedParticle.ori[1] + cosphi*MovedParticle.ori[2];
+                    			MovedParticle.ori[1] = cosphi*Config.part[randP].ori[1] + sinphi*Config.part[randP].ori[2];
+                    			MovedParticle.ori[2] = -sinphi*Config.part[randP].ori[1] + cosphi*Config.part[randP].ori[2];
                     			break;
                 		}
-
-                		double norm = 1/sqrt(MovedParticle.ori[0]*MovedParticle.ori[0] + MovedParticle.ori[1]*MovedParticle.ori[1] + MovedParticle.ori[2]*MovedParticle.ori[2]);
-                		MovedParticle.ori[0] *= norm;
-                		MovedParticle.ori[1] *= norm;
-                		MovedParticle.ori[2] *= norm;
 
 				sqrtz = 1-MovedParticle.ori[2]*MovedParticle.ori[2];
 				if(sqrtz > 1e-4){
@@ -87,8 +82,6 @@ void Move_step(){
 
 				NCell.resize(0);
 				NPart.resize(0);
-				first=true;
-				vorzeichen = 1;
 
 				int k = MovedParticle.cell;
 
@@ -106,6 +99,8 @@ void Move_step(){
 
 				int kN = MovedParticle.cell;
 				if( MovedParticle.cellN != MovedParticle.cell && !inside){
+
+					MovedParticle.dist*=-1;	
 					k = MovedParticle.cellN;
 
 					vv = Config.head[k];
@@ -119,19 +114,17 @@ void Move_step(){
 					}
 					NCell.push_back(k);
 					Config.usedCell[k]=true;
+					MovedParticle.dist*=-1;	
 				}
 
 
 				if(!inside){
 
-				dsx = MovedParticle.pos[0]-MovedParticle.dist*MovedParticle.ori[0];
-				dsxN = MovedParticle.pos[0]+MovedParticle.dist*MovedParticle.ori[0];
+					dsx = MovedParticle.pos[0]-MovedParticle.dist*MovedParticle.ori[0];
 
-				dsy = MovedParticle.pos[1]-MovedParticle.dist*MovedParticle.ori[1];
-				dsyN = MovedParticle.pos[1]+MovedParticle.dist*MovedParticle.ori[1];
+					dsy = MovedParticle.pos[1]-MovedParticle.dist*MovedParticle.ori[1];
 
-				dsz = MovedParticle.pos[2]-MovedParticle.dist*MovedParticle.ori[2];
-				dszN = MovedParticle.pos[2]+MovedParticle.dist*MovedParticle.ori[2];
+					dsz = MovedParticle.pos[2]-MovedParticle.dist*MovedParticle.ori[2];
 
 					if(dsx < 0){
 						sx[0] = Config.W[0]-1;
@@ -203,7 +196,6 @@ void Move_step(){
 
 			
 				if(!inside){
-					first=false;
 
 					dsxN = MovedParticle.pos[0]+MovedParticle.dist*MovedParticle.ori[0];
 
@@ -258,7 +250,7 @@ void Move_step(){
 
 					if(sx[1] != sxN[1] || sy[1] != syN[1] || sz[1] != szN[1] ){
 						
-						vorzeichen=-1;
+						MovedParticle.dist*=-1;	
 						for (int ix=0; ix < 3 && !inside; ix++){
 
 							for (int iy=0; iy < 3 && !inside; iy++){
@@ -278,6 +270,7 @@ void Move_step(){
 								}
 							}
 						}
+						MovedParticle.dist*=-1;	
 					}
 				}
 
@@ -525,7 +518,6 @@ void Compression_step(){
 
 			NCell.resize(0);
 			NPart.resize(0);
-			first=true;
 
 
 			dsx = MovedParticle.pos[0]-MovedParticle.dist*MovedParticle.ori[0];
@@ -639,7 +631,6 @@ void Compression_step(){
 
 		
 			if(!inside){
-				first=false;
 				if(dsxN < 0){
 					sxN[0] = Config.W[0]-1;
 					sxN[1] = sxN[0] -1;

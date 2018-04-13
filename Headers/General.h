@@ -66,7 +66,6 @@ bool inside;
 bool Compressing;
 bool WallMove;
 bool firstTest;
-bool first;
 int restart;
 bool initCompress;
 

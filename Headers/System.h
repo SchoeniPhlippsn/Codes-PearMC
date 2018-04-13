@@ -26,7 +26,7 @@ void system::write (std::string file, bool save){
         }else{
             oFile <<  part[v].pos[0] << " " << part[v].pos[1] << " " << part[v].pos[2] << " "; 
             oFile <<  part[v].pos_msd[0] << " " << part[v].pos_msd[1] << " " << part[v].pos_msd[2] << " "; 
-            oFile <<  part[v].ori[0] << " " << part[v].ori[1] << " " << part[v].ori[2] << std::endl; 
+            oFile <<  part[v].ori[0] << " " << part[v].ori[1] << " " << part[v].ori[2]  << std::endl; 
         }
     }
     for( v = Nc ; v < part.size(); v++){

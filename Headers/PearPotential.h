@@ -20,144 +20,47 @@ void overlapSphere(){
 	if(Rsq < rcut_SPH ) inside=true;
 }
 
-/*
-void overlapPear (){
-	
-	std::vector<double> R (3);
-	double Rsq;
-	
-	R[0] = Config.part[newvv].pos[0] - MovedParticle.pos[0]; // boundary correction
-	if (R[0] > Config.l_2[0]){  
-		R[0] -= Config.l[0];
-	}else{ 
-		if (R[0] < -Config.l_2[0]){  
-			R[0] += Config.l[0];
-		}
-	}
-
-	R[1] = Config.part[newvv].pos[1] - MovedParticle.pos[1]; // boundary correction
-	if (R[1] > Config.l_2[1]){  
-		R[1] -= Config.l[1];
-	}else{ 
-		if (R[1] < -Config.l_2[1]){ 
-			R[1] += Config.l[1];
-		}
-	}
-
-	R[2] = Config.part[newvv].pos[2] - MovedParticle.pos[2]; // boundary correction
-	if (R[2] > Config.l_2[2]){ 
-		R[2] -= Config.l[2];
-	}else{ 
-		if (R[2] < -Config.l_2[2]){ 
-			R[2] += Config.l[2];
-		}
-	}
-	Rsq = R[0]*R[0] + R[1]*R[1] + R[2]*R[2];
-    
-    	if(Rsq < rcut_P){
-		Config.part[newvv].trans[0][3] = R[0];	
-		Config.part[newvv].trans[1][3] = R[1];	
-		Config.part[newvv].trans[2][3] = R[2];	
-
-		pear_mesh.UpdateTrans(id[0], MovedParticle.trans);
-		pear_mesh.UpdateTrans(id[1], Config.part[newvv].trans);
-
-		VCReport report;
-
-		pear_mesh.Collide( &report );
-
-		Config.part[newvv].trans[0][3] = 0;	
-		Config.part[newvv].trans[1][3] = 0;	
-		Config.part[newvv].trans[2][3] = 0;	
-		
-		if(report.numObjPairs() > 0) inside = true;
-    	}
-}
-*/
-
-
 void overlapPear (){
 	
 	std::vector<double> R (3);
 	firstTest = false;
-
-	//R[0] = Config.part[newvv].pos[0] - dsx; // boundary correction
-	//if (R[0] > Config.l_2[0]){  
-	//	R[0] -= Config.l[0];
-	//}else{ 
-	//	if (R[0] < -Config.l_2[0]){  
-	//		R[0] += Config.l[0];
-	//	}
-	//}
-
-	//R[1] = Config.part[newvv].pos[1] - dsy; // boundary correction
-	//if (R[1] > Config.l_2[1]){  
-	//	R[1] -= Config.l[1];
-	//}else{ 
-	//	if (R[1] < -Config.l_2[1]){ 
-	//		R[1] += Config.l[1];
-	//	}
-	//}
-
-	//R[2] = Config.part[newvv].pos[2] - dsz; // boundary correction
-	//if (R[2] > Config.l_2[2]){ 
-	//	R[2] -= Config.l[2];
-	//}else{ 
-	//	if (R[2] < -Config.l_2[2]){ 
-	//		R[2] += Config.l[2];
-	//	}
-	//}
+	NPart.push_back(newvv);
+	Config.part[newvv].already=true;
 
 	R[0] = Config.part[newvv].pos[0] - MovedParticle.pos[0]; // boundary correction
-	if (R[0] > Config.l_2[0]){  
-		R[0] -= Config.l[0];
-	}else{ 
-		if (R[0] < -Config.l_2[0]){  
-			R[0] += Config.l[0];
-		}
-	}
+	if (R[0] > Config.l_2[0]) R[0] -= Config.l[0];
+	else if (R[0] < -Config.l_2[0]) R[0] += Config.l[0];
 
 	R[1] = Config.part[newvv].pos[1] - MovedParticle.pos[1]; // boundary correction
-	if (R[1] > Config.l_2[1]){  
-		R[1] -= Config.l[1];
-	}else{ 
-		if (R[1] < -Config.l_2[1]){ 
-			R[1] += Config.l[1];
-		}
-	}
+	if (R[1] > Config.l_2[1]) R[1] -= Config.l[1];
+	else if (R[1] < -Config.l_2[1]) R[1] += Config.l[1];
 
 	R[2] = Config.part[newvv].pos[2] - MovedParticle.pos[2]; // boundary correction
-	if (R[2] > Config.l_2[2]){ 
-		R[2] -= Config.l[2];
-	}else{ 
-		if (R[2] < -Config.l_2[2]){ 
-			R[2] += Config.l[2];
-		}
-	}
+	if (R[2] > Config.l_2[2]) R[2] -= Config.l[2];
+	else if (R[2] < -Config.l_2[2])	R[2] += Config.l[2];
 
-	double UU = vorzeichen*MovedParticle.dist*(MovedParticle.ori[0]*Config.part[newvv].ori[0] + MovedParticle.ori[1]*Config.part[newvv].ori[1]+MovedParticle.ori[2]*Config.part[newvv].ori[2]);
+	double UU = MovedParticle.dist*(MovedParticle.ori[0]*Config.part[newvv].ori[0] + MovedParticle.ori[1]*Config.part[newvv].ori[1]+MovedParticle.ori[2]*Config.part[newvv].ori[2]);
 	double RU = R[0]*Config.part[newvv].ori[0] + R[1]*Config.part[newvv].ori[1]+R[2]*Config.part[newvv].ori[2]+UU;
 	RU = RU*RU;
 	
 	if( RU < rcut_PII ){
-		double Rsq = (R[0]+vorzeichen*MovedParticle.dist*MovedParticle.ori[0])*(R[0]+vorzeichen*MovedParticle.dist*MovedParticle.ori[0])+(R[1]+vorzeichen*MovedParticle.dist*MovedParticle.ori[1])*(R[1]+vorzeichen*MovedParticle.dist*MovedParticle.ori[1])+(R[2]+vorzeichen*MovedParticle.dist*MovedParticle.ori[2])*(R[2]+vorzeichen*MovedParticle.dist*MovedParticle.ori[2]) -RU;
+		double Rsq = (R[0]+MovedParticle.dist*MovedParticle.ori[0])*(R[0]+MovedParticle.dist*MovedParticle.ori[0])+(R[1]+MovedParticle.dist*MovedParticle.ori[1])*(R[1]+MovedParticle.dist*MovedParticle.ori[1])+(R[2]+MovedParticle.dist*MovedParticle.ori[2])*(R[2]+MovedParticle.dist*MovedParticle.ori[2]) -RU;
 		if( Rsq < rcut_PT ) firstTest=true;
 	}
 
-	if(!firstTest && first){
+	//if(!firstTest && first){
+	if(!firstTest){
 
 		RU = R[0]*Config.part[newvv].ori[0] + R[1]*Config.part[newvv].ori[1]+R[2]*Config.part[newvv].ori[2] - UU;
 		RU = RU*RU;
 		
 		if( RU < rcut_PII ){
-		double Rsq = (R[0]-MovedParticle.dist*MovedParticle.ori[0])*(R[0]-MovedParticle.dist*MovedParticle.ori[0])+(R[1]-MovedParticle.dist*MovedParticle.ori[1])*(R[1]-MovedParticle.dist*MovedParticle.ori[1])+(R[2]-MovedParticle.dist*MovedParticle.ori[2])*(R[2]-MovedParticle.dist*MovedParticle.ori[2]) -RU;
+			double Rsq = (R[0]-MovedParticle.dist*MovedParticle.ori[0])*(R[0]-MovedParticle.dist*MovedParticle.ori[0])+(R[1]-MovedParticle.dist*MovedParticle.ori[1])*(R[1]-MovedParticle.dist*MovedParticle.ori[1])+(R[2]-MovedParticle.dist*MovedParticle.ori[2])*(R[2]-MovedParticle.dist*MovedParticle.ori[2]) -RU;
 			if( Rsq < rcut_PT ) firstTest=true;
 		}
 	}
 
 	if(firstTest){
-		NPart.push_back(newvv);
-		Config.part[newvv].already=true;
 
 		Config.part[newvv].trans[0][3] = R[0];	
 		Config.part[newvv].trans[1][3] = R[1];	
