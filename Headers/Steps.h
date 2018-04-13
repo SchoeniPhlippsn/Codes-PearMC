@@ -37,6 +37,10 @@ void Move_step(){
                     			MovedParticle.ori[2] = -sinphi*Config.part[randP].ori[1] + cosphi*Config.part[randP].ori[2];
                     			break;
                 		}
+				
+				dist_ori[0] = MovedParticle.dist*MovedParticle.ori[0];
+				dist_ori[1] = MovedParticle.dist*MovedParticle.ori[1];
+				dist_ori[2] = MovedParticle.dist*MovedParticle.ori[2];
 
 				sqrtz = 1-MovedParticle.ori[2]*MovedParticle.ori[2];
 				if(sqrtz > 1e-4){
@@ -98,7 +102,9 @@ void Move_step(){
 				int kN = MovedParticle.cell;
 				if( MovedParticle.cellN != MovedParticle.cell && !inside){
 
-					MovedParticle.dist*=-1;	
+					dist_ori[0] *=-1;	
+					dist_ori[1] *=-1;	
+					dist_ori[2] *=-1;	
 					k = MovedParticle.cellN;
 
 					vv = Config.head[k];
@@ -112,17 +118,20 @@ void Move_step(){
 					}
 					NCell.push_back(k);
 					Config.usedCell[k]=true;
-					MovedParticle.dist*=-1;	
+
+					dist_ori[0] *=-1;	
+					dist_ori[1] *=-1;	
+					dist_ori[2] *=-1;	
 				}
 
 
 				if(!inside){
 
-					dsx = MovedParticle.pos[0]-MovedParticle.dist*MovedParticle.ori[0];
+					dsx = MovedParticle.pos[0]-dist_ori[0];
 
-					dsy = MovedParticle.pos[1]-MovedParticle.dist*MovedParticle.ori[1];
+					dsy = MovedParticle.pos[1]-dist_ori[1];
 
-					dsz = MovedParticle.pos[2]-MovedParticle.dist*MovedParticle.ori[2];
+					dsz = MovedParticle.pos[2]-dist_ori[2];
 
 					if(dsx < 0){
 						sx[0] = Config.W[0]-1;
@@ -194,11 +203,11 @@ void Move_step(){
 			
 				if(!inside){
 
-					dsxN = MovedParticle.pos[0]+MovedParticle.dist*MovedParticle.ori[0];
+					dsxN = MovedParticle.pos[0]+dist_ori[0];
 
-					dsyN = MovedParticle.pos[1]+MovedParticle.dist*MovedParticle.ori[1];
+					dsyN = MovedParticle.pos[1]+dist_ori[1];
 
-					dszN = MovedParticle.pos[2]+MovedParticle.dist*MovedParticle.ori[2];
+					dszN = MovedParticle.pos[2]+dist_ori[2];
 
 					if(dsxN < 0){
 						sxN[0] = Config.W[0]-1;
@@ -247,7 +256,9 @@ void Move_step(){
 
 					if(sx[1] != sxN[1] || sy[1] != syN[1] || sz[1] != szN[1] ){
 						
-						MovedParticle.dist*=-1;	
+						dist_ori[0] *=-1;	
+						dist_ori[1] *=-1;	
+						dist_ori[2] *=-1;	
 						for (int ix=0; ix < 3 && !inside; ix++){
 
 							for (int iy=0; iy < 3 && !inside; iy++){
@@ -267,7 +278,9 @@ void Move_step(){
 								}
 							}
 						}
-						MovedParticle.dist*=-1;	
+						dist_ori[0] *=-1;	
+						dist_ori[1] *=-1;	
+						dist_ori[2] *=-1;	
 					}
 				}
 
@@ -513,6 +526,11 @@ void Compression_step(){
 			MovedParticle=Config.part[v];
 			pear_mesh.UpdateTrans(id[0], MovedParticle.trans);
 
+			
+			dist_ori[0] = MovedParticle.dist*MovedParticle.ori[0];	
+			dist_ori[1] = MovedParticle.dist*MovedParticle.ori[1];	
+			dist_ori[2] = MovedParticle.dist*MovedParticle.ori[2];	
+
 			NCell.resize(0);
 			NPart.resize(0);
 
@@ -537,12 +555,18 @@ void Compression_step(){
 			    
 				while(vv != -1 && !inside){
 					newvv = vv;
-					MovedParticle.dist*=-1;	
+					dist_ori[0] *=-1;	
+					dist_ori[1] *=-1;	
+					dist_ori[2] *=-1;	
 
 					if(newvv >= Config.Nc ) newvv -= Config.Nc; 
 					if(v < newvv && !Config.part[newvv].already) overlapPear(); 
 
 					vv = Config.link[vv];
+
+					dist_ori[0] *=-1;	
+					dist_ori[1] *=-1;	
+					dist_ori[2] *=-1;	
 				}
 				NCell.push_back(k);
 				Config.usedCell[k]=true;
@@ -680,7 +704,9 @@ void Compression_step(){
 			
 				if(sx[1] != sxN[1] || sy[1] != syN[1] || sz[1] != szN[1] ){
 
-					MovedParticle.dist*=-1;	
+					dist_ori[0] *=-1;	
+					dist_ori[1] *=-1;	
+					dist_ori[2] *=-1;	
 
 					for (int ix=0; ix < 3 && !inside; ix++){
 
@@ -701,7 +727,9 @@ void Compression_step(){
 							}
 						}
 					}
-					MovedParticle.dist*=-1;	
+					dist_ori[0] *=-1;	
+					dist_ori[1] *=-1;	
+					dist_ori[2] *=-1;	
 				}
 			}
 			for( vv = 0; vv < NPart.size(); vv++) Config.part[NPart[vv]].already=false;

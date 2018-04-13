@@ -61,6 +61,7 @@ std::vector<int> syN (3);
 std::vector<int> szN (3);
 
 std::vector<double> ln;
+std::vector<double> dist_ori (3) ;
 
 bool inside;
 bool Compressing;

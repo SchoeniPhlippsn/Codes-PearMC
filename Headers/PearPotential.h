@@ -39,12 +39,12 @@ void overlapPear (){
 	if (R[2] > Config.l_2[2]) R[2] -= Config.l[2];
 	else if (R[2] < -Config.l_2[2])	R[2] += Config.l[2];
 
-	double UU = MovedParticle.dist*(MovedParticle.ori[0]*Config.part[newvv].ori[0] + MovedParticle.ori[1]*Config.part[newvv].ori[1]+MovedParticle.ori[2]*Config.part[newvv].ori[2]);
+	double UU = dist_ori[0]*Config.part[newvv].ori[0] + dist_ori[1]*Config.part[newvv].ori[1]+dist_ori[2]*Config.part[newvv].ori[2];
 	double RU = R[0]*Config.part[newvv].ori[0] + R[1]*Config.part[newvv].ori[1]+R[2]*Config.part[newvv].ori[2]+UU;
 	RU = RU*RU;
 	
 	if( RU < rcut_PII ){
-		double Rsq = (R[0]+MovedParticle.dist*MovedParticle.ori[0])*(R[0]+MovedParticle.dist*MovedParticle.ori[0])+(R[1]+MovedParticle.dist*MovedParticle.ori[1])*(R[1]+MovedParticle.dist*MovedParticle.ori[1])+(R[2]+MovedParticle.dist*MovedParticle.ori[2])*(R[2]+MovedParticle.dist*MovedParticle.ori[2]) -RU;
+		double Rsq = (R[0]+dist_ori[0])*(R[0]+dist_ori[0])+(R[1]+dist_ori[1])*(R[1]+dist_ori[1])+(R[2]+dist_ori[2])*(R[2]+dist_ori[2]) -RU;
 		if( Rsq < rcut_PT ) firstTest=true;
 	}
 
@@ -55,7 +55,7 @@ void overlapPear (){
 		RU = RU*RU;
 		
 		if( RU < rcut_PII ){
-			double Rsq = (R[0]-MovedParticle.dist*MovedParticle.ori[0])*(R[0]-MovedParticle.dist*MovedParticle.ori[0])+(R[1]-MovedParticle.dist*MovedParticle.ori[1])*(R[1]-MovedParticle.dist*MovedParticle.ori[1])+(R[2]-MovedParticle.dist*MovedParticle.ori[2])*(R[2]-MovedParticle.dist*MovedParticle.ori[2]) -RU;
+			double Rsq = (R[0]-dist_ori[0])*(R[0]-dist_ori[0])+(R[1]-dist_ori[1])*(R[1]-dist_ori[1])+(R[2]-dist_ori[2])*(R[2]-dist_ori[2]) -RU;
 			if( Rsq < rcut_PT ) firstTest=true;
 		}
 	}
