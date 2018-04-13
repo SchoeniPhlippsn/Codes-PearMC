@@ -144,6 +144,7 @@ void system::read (std::string file){
 
     for( v = Nc ; v < part.size(); v++){
         part[v].pos.resize(3);
+        part[v].pos_msd.resize(3);
         part[v].ori.resize(3);
 
         iFile >> part[v].pos[0] >> part[v].pos[1] >> part[v].pos[2]  >> part[v].pos_msd[0] >> part[v].pos_msd[1] >> part[v].pos_msd[2]>> rsphere; 
@@ -151,6 +152,10 @@ void system::read (std::string file){
 	if(part[v].pos[0] < 0 ) part[v].pos[0] += l[0];
 	if(part[v].pos[1] < 0 ) part[v].pos[1] += l[1];
 	if(part[v].pos[2] < 0 ) part[v].pos[2] += l[2];
+
+	if(step < 100) part[v].pos_msd[0] =0;
+	if(step < 100) part[v].pos_msd[1] =0;
+	if(step < 100) part[v].pos_msd[2] =0;
 
 	for(vv = 0; vv < Nc; vv++ ){ 
 		if (overlapPSPH ( part[vv], part[v], l) ){
