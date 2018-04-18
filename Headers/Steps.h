@@ -85,7 +85,7 @@ void Move_step(){
 				NCell.resize(0);
 				NPart.resize(0);
 
-				int k = MovedParticle.cell;
+				k = MovedParticle.cell;
 
 		    		vv = Config.head[k];
 		    
@@ -99,8 +99,8 @@ void Move_step(){
 				NCell.push_back(k);
 				Config.usedCell[k]=true;
 
-				int kN = MovedParticle.cell;
 				if( MovedParticle.cellN != MovedParticle.cell && !inside){
+					k = MovedParticle.cell;
 
 					dist_ori[0] *=-1;	
 					dist_ori[1] *=-1;	
@@ -178,15 +178,15 @@ void Move_step(){
 						if(sz[2]>=Config.W[2]) sz[2]-=Config.W[2];
 					}
 
-					for (int ix=0; ix < 3 && !inside; ix++){
-
+					for (int iz=0; iz < 3 && !inside; iz++){
+						kz = Config.W0W1*sz[iz];
 						for (int iy=0; iy < 3 && !inside; iy++){
-
-							for (int iz=0; iz <= 3 && !inside; iz++){
-								int k = sx[ix] + Config.W[0]*(sy[iy] + Config.W[1]*sz[iz]);
-								if( Config.usedCell[k] ) continue;
+							ky = Config.W[0]*sy[iy] + kz;
+							for (int ix=0; ix <= 3 && !inside; ix++){
+								kx = sx[ix] + ky;
+								if( Config.usedCell[kx] ) continue;
 				
-								vv = Config.head[k];
+								vv = Config.head[kx];
 						    
 								while(vv != -1 && !inside){
 									newvv = vv;
@@ -194,8 +194,8 @@ void Move_step(){
 									if(randP != newvv && !Config.part[newvv].already) overlapPear(); 
 									vv = Config.link[vv];
 								}
-								NCell.push_back(k);
-								Config.usedCell[k]=true;
+								NCell.push_back(kx);
+								Config.usedCell[kx]=true;
 							}
 						}
 					}
@@ -258,16 +258,15 @@ void Move_step(){
 						
 						dist_ori[0] *=-1;	
 						dist_ori[1] *=-1;	
-						dist_ori[2] *=-1;	
-						for (int ix=0; ix < 3 && !inside; ix++){
-
+						for (int iz=0; iz < 3 && !inside; iz++){
+							kz = Config.W0W1*szN[iz];
 							for (int iy=0; iy < 3 && !inside; iy++){
-
-								for (int iz=0; iz <= 3 && !inside; iz++){
-									int k = sxN[ix] + Config.W[0]*(syN[iy] + Config.W[1]*szN[iz]);
-									if( Config.usedCell[k] ) continue;
+								ky = Config.W[0]*syN[iy] + kz;
+								for (int ix=0; ix <= 3 && !inside; ix++){
+									kx = sxN[ix] + ky;
+									if( Config.usedCell[kx] ) continue;
 					
-									vv = Config.head[k];
+									vv = Config.head[kx];
 							    
 									while(vv != -1 && !inside){
 										newvv = vv;
@@ -308,7 +307,7 @@ void Move_step(){
 
 	    		if(!inside){
 
-				int k = MovedParticle.cell;
+				k = MovedParticle.cell;
 
 		    		vv = Config.head[k];
 		    
@@ -352,15 +351,15 @@ void Move_step(){
 					else sz[1] = sz[0] -1;
 		    		}
 
-		    		for (int ix=0; ix < 3 && !inside; ix++){
-
+		    		for (int iz=0; iz < 3 && !inside; iz++){
+					kz = Config.W0W1*sz[iz];
 					for (int iy=0; iy < 3 && !inside; iy++){
-
-						for (int iz=0; iz <= 3 && !inside; iz++){
-					    		k = sx[ix] + Config.W[0]*(sy[iy] + Config.W[1]*sz[iz]);
-					    		if( k == MovedParticle.cell ) continue;
+						ky = Config.W[0]*sy[iy] + kz;
+						for (int ix=0; ix <= 3 && !inside; ix++){
+					    		kx = sx[ix] + ky;
+					    		if( kx == MovedParticle.cell ) continue;
 		    	
-					    		vv = Config.head[k];
+					    		vv = Config.head[kx];
 					    
 					    		while(vv != -1 && !inside){
 								overlapSphere(); 
@@ -390,7 +389,7 @@ void Move_step(){
         	    	else if( MovedParticle.pos[2] < 0 ) MovedParticle.pos[2] += Config.l[2];
 	
            		if (Config.Ns == 0){
-				int k = sx[0] + Config.W[0]*(sy[0] + Config.W[1]*sz[0]); 
+				k = sx[0] + Config.W[0]*sy[0] + Config.W0W1*sz[0]; 
 
 				if(MovedParticle.cell != k){
 					if(Config.head[MovedParticle.cell] != randP ){
@@ -411,7 +410,7 @@ void Move_step(){
 					MovedParticle.cell = k;
 				}
 
-				k = sxN[0] + Config.W[0]*(syN[0] + Config.W[1]*szN[0]); 
+				k = sxN[0] + Config.W[0]*syN[0] + Config.W0W1*szN[0]; 
 
 				if(MovedParticle.cellN != k){
 					if(Config.head[MovedParticle.cellN] != randP+Config.Nc ){
@@ -435,7 +434,7 @@ void Move_step(){
 
 			}else{ 
 				if( randP >= Config.Nc){
-					int k = sx[0] + Config.W[0]*(sy[0] + Config.W[1]*sz[0]); 
+					int k = sx[0] + Config.W[0]*sy[0] + Config.W0W1*sz[0]; 
 
 					if(MovedParticle.cell != k){
 						if(Config.head[MovedParticle.cell] != randP ){
@@ -574,11 +573,11 @@ void Compression_step(){
 			}
 
 			if(!inside){
-				dsx = MovedParticle.pos[0]-MovedParticle.dist*MovedParticle.ori[0];
+				dsx = MovedParticle.pos[0]-dist_ori[0];
 
-				dsy = MovedParticle.pos[1]-MovedParticle.dist*MovedParticle.ori[1];
+				dsy = MovedParticle.pos[1]-dist_ori[1];
 
-				dsz = MovedParticle.pos[2]-MovedParticle.dist*MovedParticle.ori[2];
+				dsz = MovedParticle.pos[2]-dist_ori[2];
 
 				if(dsx < 0){
 					sx[0] = Config.W[0]-1;
@@ -625,15 +624,15 @@ void Compression_step(){
 					if(sz[2]>=Config.W[2]) sz[2]-=Config.W[2];
 				}
 
-				for (int ix=0; ix < 3 && !inside; ix++){
-
+				for (int iz=0; iz < 3 && !inside; iz++){
+					kz = Config.W0W1*sz[iz];
 					for (int iy=0; iy < 3 && !inside; iy++){
-
-						for (int iz=0; iz <= 3 && !inside; iz++){
-							k = sx[ix] + Config.W[0]*(sy[iy] + Config.W[1]*sz[iz]);
-							if( Config.usedCell[k] ) continue;
+						ky = Config.W[0]*sy[iy] + kz;
+						for (int ix=0; ix <= 3 && !inside; ix++){
+							kx = sx[ix] + ky;
+							if( Config.usedCell[kx] ) continue;
 			
-							vv = Config.head[k];
+							vv = Config.head[kx];
 					    
 							while(vv != -1 && !inside){
 								newvv = vv;
@@ -641,8 +640,8 @@ void Compression_step(){
 								if(v < newvv && !Config.part[newvv].already) overlapPear(); 
 								vv = Config.link[vv];
 							}
-							NCell.push_back(k);
-							Config.usedCell[k]=true;
+							NCell.push_back(kx);
+							Config.usedCell[kx]=true;
 						}
 					}
 				}
@@ -650,11 +649,11 @@ void Compression_step(){
 
 			if(!inside){
 
-				dsxN = MovedParticle.pos[0]+MovedParticle.dist*MovedParticle.ori[0];
+				dsxN = MovedParticle.pos[0]+dist_ori[0];
 
-				dsyN = MovedParticle.pos[1]+MovedParticle.dist*MovedParticle.ori[1];
+				dsyN = MovedParticle.pos[1]+dist_ori[1];
 
-				dszN = MovedParticle.pos[2]+MovedParticle.dist*MovedParticle.ori[2];
+				dszN = MovedParticle.pos[2]+dist_ori[2];
 
 
 				if(dsxN < 0){
@@ -708,15 +707,15 @@ void Compression_step(){
 					dist_ori[1] *=-1;	
 					dist_ori[2] *=-1;	
 
-					for (int ix=0; ix < 3 && !inside; ix++){
-
+					for (int iz=0; iz < 3 && !inside; iz++){
+						kz = Config.W0W1*szN[iz];
 						for (int iy=0; iy < 3 && !inside; iy++){
-
-							for (int iz=0; iz <= 3 && !inside; iz++){
-								k = sxN[ix] + Config.W[0]*(syN[iy] + Config.W[1]*szN[iz]);
-								if( Config.usedCell[k] ) continue;
+							ky = Config.W[0]*syN[iy] + kz;
+							for (int ix=0; ix <= 3 && !inside; ix++){
+								kx = sxN[ix] + ky;
+								if( Config.usedCell[kx] ) continue;
 				
-								vv = Config.head[k];
+								vv = Config.head[kx];
 						    
 								while(vv != -1 && !inside){
 									newvv = vv;
@@ -795,15 +794,15 @@ void Compression_step(){
 				else sz[0] = sz[1] -1;
 			}
 
-			for (int ix=0; ix < 3 && !inside; ix++){
-
+			for (int iz=0; iz < 3 && !inside; iz++){
+				kz = Config.W0W1*sz[iz];
 				for (int iy=0; iy < 3 && !inside; iy++){
-
-					for (int iz=0; iz <= 3 && !inside; iz++){
-						k = sx[ix] + Config.W[0]*(sy[iy] + Config.W[1]*sz[iz]);
-						if( k == Config.part[v].cell ) continue;
+					ky = Config.W[0]*sy[iy] + kz;
+					for (int ix=0; ix <= 3 && !inside; ix++){
+						kx = sx[ix] + ky;
+						if( kx == Config.part[v].cell ) continue;
 		
-						vv = Config.head[k];
+						vv = Config.head[kx];
 				    
 						while(vv != -1 && !inside){
 							if(overlapSPH(Config.part[vv],Config.part[v], Config.l)) inside=true; 

@@ -44,6 +44,8 @@ int Case;
 
 int vv, newvv;
 
+int k, kx, ky, kz;
+
 double dsx;
 double dsy;
 double dsz;
@@ -117,6 +119,7 @@ public:
     std::vector<int> head;
     std::vector<int> link;
     std::vector<int> W;
+    int W0W1;
     std::vector<double> w;
     std::vector<bool> usedCell;
     int step;

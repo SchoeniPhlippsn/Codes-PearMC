@@ -155,6 +155,12 @@ int main(int argc, char** argv){
 		if(Config.step % compstep == 0 && WallMove) Compression_step();
         	Config.step++;
 	}
+
+	for(int v = 0;  v < N; v++){
+		Config.part[v].pos_msd[0] = 0;
+		Config.part[v].pos_msd[1] = 0;
+		Config.part[v].pos_msd[2] = 0;
+	}
     	Config.write("Results/finalConfig.dat",1);
 
     	std::ofstream File ("Save/status.txt");
