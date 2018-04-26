@@ -82,10 +82,12 @@ void Init(){
 
     	if(status){ 
 		status >> restart;
-		iFile.open("Save/Config.dat");
-		if(!iFile){
-			 std::cerr << "There is no Save/Config.dat file!" << std::endl;
-        		exit(-1);
+		if(restart!=0){
+			iFile.open("Save/Config.dat");
+			if(!iFile){
+				 std::cerr << "There is no Save/Config.dat file!" << std::endl;
+				exit(-1);
+			}
 		}
     	}else{
         	std::cerr << "There is no Save/status.txt file! Please indicate if I have to start from the beginning" << std::endl;

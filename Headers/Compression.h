@@ -1,6 +1,6 @@
 void Compression(){
 
-    if(Config.step==0 || fabs(rho0-Config.rhoV) > 1e-4){
+    if(fabs(rho0-Config.rhoV) > 1e-4){
         Config.step=0;
 	rhoInit = Config.rhoV;
 	Compressing = true;		
@@ -11,8 +11,9 @@ void Compression(){
             acceptance = static_cast<double>(acc)/N;
             Compression_step(); 
             std::cout << acceptance << std::endl;
+        	Config.write("Save/Config.dat",1);
         }
-
+	
         std::cout <<  Config.rhoV  << " " << rho0 << std::endl;
         
         Config.rhoV = rho0;

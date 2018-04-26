@@ -22,7 +22,7 @@ int main(int argc, char** argv){
 	Config.Nc=2; //# of spherocylinder
 	Config.Ns=2398; //# of spheres
 	seed=42;
-	rho0=0.45; //density
+	rho0=0.5; //density
 	pos_lambda = 0.02;
 	ori_lambda = 0.02;
 	vproc = 0.99;
@@ -65,7 +65,8 @@ int main(int argc, char** argv){
 	a3=a1*(kth+2.0/3.0*aspect)/kth;
 	b1 = aspect*a1; 
 	distN = 0.5*b1;
-	rlist = 2*(b1-distN)+0.02;
+	rlist = 2*sqrt(distN*distN+a1*a1)+0.02;
+	if(rlist < 2*(b1-distN)) rlist = 2*(b1-distN)+0.02;
 	
     	RHO = toString(rho0);
     	NC = toString(Config.Nc);
@@ -154,12 +155,6 @@ int main(int argc, char** argv){
         	}
 		if(Config.step % compstep == 0 && WallMove) Compression_step();
         	Config.step++;
-	}
-
-	for(int v = 0;  v < N; v++){
-		Config.part[v].pos_msd[0] = 0;
-		Config.part[v].pos_msd[1] = 0;
-		Config.part[v].pos_msd[2] = 0;
 	}
     	Config.write("Results/finalConfig.dat",1);
 

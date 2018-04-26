@@ -8,7 +8,7 @@ const double two_sixth = pow(2.0,1.0/6.0);
 double distN;
 
 //hardWalls main
-double rlist = 2*(b1-distN)+0.02;
+double rlist;
 double rlist_2;
 double rcut_SPH;
 double rcut_PSPH;
@@ -44,8 +44,6 @@ int Case;
 
 int vv, newvv;
 
-int k, kx, ky, kz;
-
 double dsx;
 double dsy;
 double dsz;
@@ -63,7 +61,8 @@ std::vector<int> syN (3);
 std::vector<int> szN (3);
 
 std::vector<double> ln;
-std::vector<double> dist_ori (3) ;
+
+std::vector<double> dist_ori (3);
 
 bool inside;
 bool Compressing;
@@ -119,7 +118,6 @@ public:
     std::vector<int> head;
     std::vector<int> link;
     std::vector<int> W;
-    int W0W1;
     std::vector<double> w;
     std::vector<bool> usedCell;
     int step;

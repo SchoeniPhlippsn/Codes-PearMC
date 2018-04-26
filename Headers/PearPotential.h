@@ -23,7 +23,6 @@ void overlapSphere(){
 void overlapPear (){
 	
 	std::vector<double> R (3);
-	firstTest = false;
 	NPart.push_back(newvv);
 	Config.part[newvv].already=true;
 
@@ -39,32 +38,14 @@ void overlapPear (){
 	if (R[2] > Config.l_2[2]) R[2] -= Config.l[2];
 	else if (R[2] < -Config.l_2[2])	R[2] += Config.l[2];
 
-	double UU = dist_ori[0]*Config.part[newvv].ori[0] + dist_ori[1]*Config.part[newvv].ori[1]+dist_ori[2]*Config.part[newvv].ori[2];
-	double RU = R[0]*Config.part[newvv].ori[0] + R[1]*Config.part[newvv].ori[1]+R[2]*Config.part[newvv].ori[2]+UU;
-	RU = RU*RU;
-	
-	if( RU < rcut_PII ){
-		double Rsq = (R[0]+dist_ori[0])*(R[0]+dist_ori[0])+(R[1]+dist_ori[1])*(R[1]+dist_ori[1])+(R[2]+dist_ori[2])*(R[2]+dist_ori[2]) -RU;
-		if( Rsq < rcut_PT ) firstTest=true;
-	}
-
-	//if(!firstTest && first){
-	if(!firstTest){
-
-		RU = R[0]*Config.part[newvv].ori[0] + R[1]*Config.part[newvv].ori[1]+R[2]*Config.part[newvv].ori[2] - UU;
-		RU = RU*RU;
-		
-		if( RU < rcut_PII ){
-			double Rsq = (R[0]-dist_ori[0])*(R[0]-dist_ori[0])+(R[1]-dist_ori[1])*(R[1]-dist_ori[1])+(R[2]-dist_ori[2])*(R[2]-dist_ori[2]) -RU;
-			if( Rsq < rcut_PT ) firstTest=true;
-		}
-	}
-
-	if(firstTest){
+	double Rsq = R[0]*R[0]+R[1]*R[1]+R[2]*R[2];
+    
+	if(Rsq < rcut_P){
 
 		Config.part[newvv].trans[0][3] = R[0];	
 		Config.part[newvv].trans[1][3] = R[1];	
 		Config.part[newvv].trans[2][3] = R[2];	
+
 
 		pear_mesh.UpdateTrans(id[1], Config.part[newvv].trans);
 
@@ -75,8 +56,9 @@ void overlapPear (){
 		Config.part[newvv].trans[0][3] = 0;	
 		Config.part[newvv].trans[1][3] = 0;	
 		Config.part[newvv].trans[2][3] = 0;	
-		
+
 		if(report.numObjPairs() > 0) inside = true;
+
 	}
 }
 
