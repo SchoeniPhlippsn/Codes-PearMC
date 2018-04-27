@@ -3,7 +3,7 @@ void Compression(){
     if(fabs(rho0-Config.rhoV) > 1e-4){
         Config.step=0;
 	rhoInit = Config.rhoV;
-	Compressing = true;		
+	Compressing = true;	
         while (rho0>Config.rhoV){
             acc = 0;   
          //   if(initCompress) exit(0);

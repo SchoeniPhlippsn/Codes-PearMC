@@ -20,11 +20,119 @@ void overlapSphere(){
 	if(Rsq < rcut_SPH ) inside=true;
 }
 
+void overlapSpherePear (){
+	
+	std::vector<double> R (3);
+
+	R[0] = MovedParticle.pos[0] - Config.part[newvv].pos[0]; // boundary correction
+	if (R[0] > Config.l_2[0]) R[0] -= Config.l[0];
+	else if (R[0] < -Config.l_2[0]) R[0] += Config.l[0];
+
+	R[1] = MovedParticle.pos[1] - Config.part[newvv].pos[1]; // boundary correction
+	if (R[1] > Config.l_2[1]) R[1] -= Config.l[1];
+	else if (R[1] < -Config.l_2[1]) R[1] += Config.l[1];
+
+	R[2] = MovedParticle.pos[2] - Config.part[newvv].pos[2]; // boundary correction
+	if (R[2] > Config.l_2[2]) R[2] -= Config.l[2];
+	else if (R[2] < -Config.l_2[2])	R[2] += Config.l[2];
+
+	double Rsq = R[0]*R[0]+R[1]*R[1]+R[2]*R[2];
+    
+
+    	if(Rsq < rcut_PSPH){
+        
+        	double rw = Config.part[newvv].ori[0]*R[0] + Config.part[newvv].ori[1]*R[1] + Config.part[newvv].ori[2]*R[2];
+       
+		double rwT = Rsq - rw*rw;
+
+		if( rwT < rcut_PSPH_T ){
+			if( rwT < 1e-4 ) inside = true;
+			else{
+				rwT = 1/sqrt(rwT);
+				std::vector<double> wT (3);
+                            	wT[0] = (R[0] - rw*Config.part[newvv].ori[0])*rwT;
+                            	wT[1] = (R[1] - rw*Config.part[newvv].ori[1])*rwT;
+                            	wT[2] = (R[2] - rw*Config.part[newvv].ori[2])*rwT;
+
+                            	double min_val = 10000;
+
+                            	for( int i=0; i < bezier_x.size(); i++){
+                                	std::vector<double> surf_point (3);
+                                	surf_point[0] = bezier_z[i]*Config.part[newvv].ori[0] + bezier_x[i]*wT[0] - R[0];
+                                	surf_point[1] = bezier_z[i]*Config.part[newvv].ori[1] + bezier_x[i]*wT[1] - R[1];
+                                	surf_point[2] = bezier_z[i]*Config.part[newvv].ori[2] + bezier_x[i]*wT[2] - R[2];
+
+                                	Rsq = surf_point[0]*surf_point[0] + surf_point[1]*surf_point[1] +surf_point[2]*surf_point[2];
+
+                                	if(Rsq <  rsphere*rsphere ) break;
+
+                                	if(min_val > Rsq) min_val = Rsq;
+                                	else break;
+                            	}
+                            	if(Rsq <  rsphere*rsphere ) inside = true;
+			}
+		}
+    	}
+}
+
+void overlapPearSphere (){
+	
+	std::vector<double> R (3);
+
+	R[0] = Config.part[newvv].pos[0] - MovedParticle.pos[0]; // boundary correction
+	if (R[0] > Config.l_2[0]) R[0] -= Config.l[0];
+	else if (R[0] < -Config.l_2[0]) R[0] += Config.l[0];
+
+	R[1] = Config.part[newvv].pos[1] - MovedParticle.pos[1]; // boundary correction
+	if (R[1] > Config.l_2[1]) R[1] -= Config.l[1];
+	else if (R[1] < -Config.l_2[1]) R[1] += Config.l[1];
+
+	R[2] = Config.part[newvv].pos[2] - MovedParticle.pos[2]; // boundary correction
+	if (R[2] > Config.l_2[2]) R[2] -= Config.l[2];
+	else if (R[2] < -Config.l_2[2])	R[2] += Config.l[2];
+
+	double Rsq = R[0]*R[0]+R[1]*R[1]+R[2]*R[2];
+    
+
+    	if(Rsq < rcut_PSPH){
+        
+        	double rw = MovedParticle.ori[0]*R[0] + MovedParticle.ori[1]*R[1] + MovedParticle.ori[2]*R[2];
+       
+		double rwT = Rsq - rw*rw;
+
+		if( rwT < rcut_PSPH_T ){
+			if( rwT < 1e-4 ) inside = true;
+			else{
+				rwT = 1/sqrt(rwT);
+				std::vector<double> wT (3);
+                            	wT[0] = (R[0] - rw*MovedParticle.ori[0])*rwT;
+                            	wT[1] = (R[1] - rw*MovedParticle.ori[1])*rwT;
+                            	wT[2] = (R[2] - rw*MovedParticle.ori[2])*rwT;
+
+                            	double min_val = 10000;
+
+                            	for( int i=0; i < bezier_x.size(); i++){
+                                	std::vector<double> surf_point (3);
+                                	surf_point[0] = bezier_z[i]*MovedParticle.ori[0] + bezier_x[i]*wT[0] - R[0];
+                                	surf_point[1] = bezier_z[i]*MovedParticle.ori[1] + bezier_x[i]*wT[1] - R[1];
+                                	surf_point[2] = bezier_z[i]*MovedParticle.ori[2] + bezier_x[i]*wT[2] - R[2];
+
+                                	Rsq = surf_point[0]*surf_point[0] + surf_point[1]*surf_point[1] +surf_point[2]*surf_point[2];
+
+                                	if(Rsq <  rsphere*rsphere ) break;
+
+                                	if(min_val > Rsq) min_val = Rsq;
+                                	else break;
+                            	}
+                            	if(Rsq <  rsphere*rsphere ) inside = true;
+			}
+		}
+    	}
+}
+
 void overlapPear (){
 	
 	std::vector<double> R (3);
-	NPart.push_back(newvv);
-	Config.part[newvv].already=true;
 
 	R[0] = Config.part[newvv].pos[0] - MovedParticle.pos[0]; // boundary correction
 	if (R[0] > Config.l_2[0]) R[0] -= Config.l[0];

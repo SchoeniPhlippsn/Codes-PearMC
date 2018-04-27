@@ -91,7 +91,11 @@ void Move_step(){
 		    		while(vv != -1 && !inside){
 					newvv = vv;
 					if(newvv >= Config.Nc ) newvv -= Config.Nc; 
-					if(randP != newvv && !Config.part[newvv].already) overlapPear(); 
+					if(randP != newvv && !Config.part[newvv].already){ 
+						NPart.push_back(newvv);
+						Config.part[newvv].already=true;	
+						overlapPear(); 
+					}
 
 					vv = Config.link[vv];
 		    		}
@@ -108,7 +112,11 @@ void Move_step(){
 					while(vv != -1 && !inside){
 						newvv = vv;
 						if(newvv >= Config.Nc ) newvv -= Config.Nc; 
-						if(randP != newvv && !Config.part[newvv].already) overlapPear(); 
+						if(randP != newvv && !Config.part[newvv].already){ 
+							NPart.push_back(newvv);
+							Config.part[newvv].already=true;
+							overlapPear(); 
+						}
 
 						vv = Config.link[vv];
 					}
@@ -183,7 +191,11 @@ void Move_step(){
 								while(vv != -1 && !inside){
 									newvv = vv;
 									if(newvv >= Config.Nc ) newvv -= Config.Nc; 
-									if(randP != newvv && !Config.part[newvv].already) overlapPear(); 
+									if(randP != newvv && !Config.part[newvv].already){ 
+										NPart.push_back(newvv);
+										Config.part[newvv].already=true;	
+										overlapPear(); 
+									}
 									vv = Config.link[vv];
 								}
 								NCell.push_back(k);
@@ -261,7 +273,11 @@ void Move_step(){
 									while(vv != -1 && !inside){
 										newvv = vv;
 										if(newvv >= Config.Nc ) newvv -= Config.Nc; 
-										if(randP != newvv && !Config.part[newvv].already) overlapPear(); 
+										if(randP != newvv && !Config.part[newvv].already){ 
+											NPart.push_back(newvv);
+											Config.part[newvv].already=true;	
+											overlapPear(); 
+										}
 										vv = Config.link[vv];
 									}
 								}
@@ -273,13 +289,12 @@ void Move_step(){
 				for( vv = 0; vv < NPart.size(); vv++) Config.part[NPart[vv]].already=false;
 				for( vv = 0; vv < NCell.size(); vv++) Config.usedCell[NCell[vv]]=false;
 	        	}else{
-				for( vv = 0; vv < Config.Nc && !inside; vv++ ){
-					if(randP==vv) continue;
-					if(overlapP(MovedParticle,Config.part[vv], Config.l)) inside=true; 
+				for( newvv = 0; newvv < Config.Nc && !inside; newvv++ ){
+					if(randP==newvv) overlapPear(); 
 				}
 
-				for( vv = Config.Nc; vv < Config.part.size() && !inside; vv++ ){
-					if(overlapPSPH(MovedParticle,Config.part[vv], Config.l)) inside=true;
+				for( newvv = Config.Nc; newvv < Config.part.size() && !inside; newvv++ ){
+					overlapPearSphere(); 
 				}
 	        	}
 
@@ -288,8 +303,8 @@ void Move_step(){
 			MovedParticle.pos[1] = MovedParticle.pos[1] + (uni(gen)-0.5)*pos_lambda;
 			MovedParticle.pos[2] = MovedParticle.pos[2] + (uni(gen)-0.5)*pos_lambda;
 
-            		for( vv = 0; vv < Config.Nc && !inside; vv++ ){
-                		if(overlapPSPH(Config.part[vv],MovedParticle, Config.l)) inside=true; 
+            		for( newvv = 0; newvv < Config.Nc && !inside; newvv++ ){
+				overlapSpherePear(); 
             		}
 
 	    		if(!inside){
@@ -507,9 +522,9 @@ void Compression_step(){
     inside = false;
 
     for( int v=0; v < Config.part.size()-1 && !inside; v++){
+	MovedParticle=Config.part[v];
         if(v < Config.Nc){
 		if(Config.Ns == 0 ){
-			MovedParticle=Config.part[v];
 			pear_mesh.UpdateTrans(id[0], MovedParticle.trans);
 
 			
@@ -527,7 +542,11 @@ void Compression_step(){
 			while(vv != -1 && !inside){
 				newvv = vv;
 				if(newvv >= Config.Nc ) newvv -= Config.Nc; 
-				if(v < newvv && !Config.part[newvv].already) overlapPear(); 
+				if(v < newvv && !Config.part[newvv].already){ 
+					NPart.push_back(newvv);
+					Config.part[newvv].already=true;
+					overlapPear(); 
+				}
 
 				vv = Config.link[vv];
 			}
@@ -543,8 +562,11 @@ void Compression_step(){
 					newvv = vv;
 
 					if(newvv >= Config.Nc ) newvv -= Config.Nc; 
-					if(v < newvv && !Config.part[newvv].already) overlapPear(); 
-
+					if(v < newvv && !Config.part[newvv].already){
+						NPart.push_back(newvv);
+						Config.part[newvv].already=true;
+						overlapPear(); 
+					}
 					vv = Config.link[vv];
 				}
 				NCell.push_back(k);
@@ -616,7 +638,11 @@ void Compression_step(){
 							while(vv != -1 && !inside){
 								newvv = vv;
 								if(newvv >= Config.Nc ) newvv -= Config.Nc; 
-								if(v < newvv && !Config.part[newvv].already) overlapPear(); 
+								if(v < newvv && !Config.part[newvv].already){
+									NPart.push_back(newvv);
+									Config.part[newvv].already=true;
+									overlapPear(); 
+								}
 								vv = Config.link[vv];
 							}
 							NCell.push_back(k);
@@ -695,7 +721,11 @@ void Compression_step(){
 								while(vv != -1 && !inside){
 									newvv = vv;
 									if(newvv >= Config.Nc ) newvv -= Config.Nc; 
-									if(v < newvv && !Config.part[newvv].already) overlapPear(); 
+									if(v < newvv && !Config.part[newvv].already){
+										NPart.push_back(newvv);
+										Config.part[newvv].already=true;
+										overlapPear(); 
+									}
 									vv = Config.link[vv];
 								}
 							}
@@ -706,18 +736,17 @@ void Compression_step(){
 			for( vv = 0; vv < NPart.size(); vv++) Config.part[NPart[vv]].already=false;
 			for( vv = 0; vv < NCell.size(); vv++) Config.usedCell[NCell[vv]]=false;
 		}else{
-			for( vv = 0; vv < Config.Nc && !inside; vv++ ){
-				if(v==vv) continue;
-				if(overlapP(Config.part[v],Config.part[vv], Config.l)) inside=true; 
+			for( newvv = 0; newvv < Config.Nc && !inside; newvv++ ){
+				if(v!=newvv) overlapPear(); 
 			}
 
-			for( vv = Config.Nc; vv < Config.part.size() && !inside; vv++ ){
-				if(overlapPSPH(Config.part[v],Config.part[vv], Config.l)) inside=true;
+			for( newvv = Config.Nc; newvv < Config.part.size() && !inside; newvv++ ){
+				overlapPearSphere(); 
 			}
 		}
 	}else{
-		for( vv = 0; vv < Config.Nc && !inside; vv++ ){
-			if(overlapPSPH(Config.part[vv],Config.part[v], Config.l)) inside=true; 
+		for( newvv = 0; newvv < Config.Nc && !inside; newvv++ ){
+			overlapSpherePear(); 
 		}
 
 		if(!inside){
@@ -727,7 +756,7 @@ void Compression_step(){
 			vv = Config.head[k];
 	    
 			while(vv != -1 && !inside){
-				if(v != vv ) if(overlapSPH(Config.part[vv],Config.part[v], Config.l)) inside=true; 
+				if(v != vv ) overlapSphere(); 
 
 				vv = Config.link[vv];
 			}
@@ -777,7 +806,7 @@ void Compression_step(){
 						vv = Config.head[k];
 				    
 						while(vv != -1 && !inside){
-							if(overlapSPH(Config.part[vv],Config.part[v], Config.l)) inside=true; 
+							overlapSphere(); 
 							vv = Config.link[vv];
 						}
 					}
