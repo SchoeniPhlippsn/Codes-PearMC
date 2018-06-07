@@ -60,9 +60,9 @@ std::vector<int> sxN (3);
 std::vector<int> syN (3);
 std::vector<int> szN (3);
 
-std::vector<int> bx (5);
-std::vector<int> by (5);
-std::vector<int> bz (5);
+std::vector<int> bx (5,0);
+std::vector<int> by (5,0);
+std::vector<int> bz (5,0);
 
 int bsx,bsy;
 

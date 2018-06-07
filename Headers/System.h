@@ -392,8 +392,11 @@ void system::read (std::string file){
 	NPart.resize(0);
 
 	sx[0] = part[v].pos[0]*wS[0];
+	if(sx[0] == WS[0]) sx[0] = WS[0]-1;
 	sy[0] = part[v].pos[1]*wS[1];
+	if(sy[0] == WS[1]) sy[0] = WS[1]-1;
 	sz[0] = part[v].pos[2]*wS[2];
+	if(sz[0] == WS[2]) sz[0] = WS[2]-1;
 
 	int kN = sx[0] + WS[0]*(sy[0]+WS[1]*sz[0]);
 		
@@ -404,8 +407,11 @@ void system::read (std::string file){
 
 	
 	sxN[0] = part[v].pos[0]*wP[0];
+	if(sxN[0] == WP[0]) sxN[0] = WP[0]-1;
 	syN[0] = part[v].pos[1]*wP[1];
+	if(syN[0] == WP[1]) syN[0] = WP[1]-1;
 	szN[0] = part[v].pos[2]*wP[2];
+	if(szN[0] == WP[2]) syN[0] = WP[2]-1;
 
 	sxN[1] = sxN[0]-1;
 	if(sxN[1] < 0 ) sxN[1] = WP[0]-1;
