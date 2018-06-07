@@ -1,6 +1,6 @@
 CC = g++
 
-VC_TOP     = ../../../vcollide-2.01
+VC_TOP     = ../../../../vcollide-2.01
 
 CFLAGS = -w -O
 

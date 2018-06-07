@@ -8,14 +8,12 @@ const double two_sixth = pow(2.0,1.0/6.0);
 double distN;
 
 //hardWalls main
-double rlist;
-double rlist_2;
+double rlistS;
+double rlistP;
 double rcut_SPH;
 double rcut_PSPH;
 double rcut_PSPH_T;
 double rcut_P;
-double rcut_PII;
-double rcut_PT;
 double maxpos;
 long N; //# of particles
 long seed;
@@ -25,7 +23,7 @@ long savestep;
 long logstep;
 long backupstep;
 long acc;
-double rho0, rhoInit; //density
+double rho0, rhoInit;
 double Vratio;
 double Vn;
 double powVn;
@@ -40,7 +38,9 @@ int zahl, zahl1;
 double acceptance;
 double sqrtz;
 double phi, cosphi, sinphi;
+double theta, costheta, sintheta;
 int Case;
+int k, kN;
 
 int vv, newvv;
 
@@ -52,19 +52,27 @@ double dsxN;
 double dsyN;
 double dszN;
 
-std::vector<int> sx (3);
-std::vector<int> sy (3);
-std::vector<int> sz (3);
+std::vector<int> sx (5);
+std::vector<int> sy (5);
+std::vector<int> sz (5);
 
 std::vector<int> sxN (3);
 std::vector<int> syN (3);
 std::vector<int> szN (3);
 
+std::vector<int> bx (5);
+std::vector<int> by (5);
+std::vector<int> bz (5);
+
+int bsx,bsy;
+
+std::vector<double> lb (3);
+
 std::vector<double> ln;
 
 std::vector<double> dist_ori (3);
 
-bool inside;
+bool inside, in_test;
 bool Compressing;
 bool WallMove;
 bool firstTest;
@@ -74,6 +82,7 @@ bool initCompress;
 std::string file_name;
 std::string file_pre;
 std::string logfile;
+std::string savefile;
 std::string RHO;
 std::string NC;
 std::string NS;
@@ -96,7 +105,6 @@ class teilchen{
     bool already;
     int cell;
     int cellN;
-    double dist;
 
         private:
 };
@@ -115,10 +123,14 @@ public:
     int Nc;
     int Ns;
     double msd;
-    std::vector<int> head;
-    std::vector<int> link;
-    std::vector<int> W;
-    std::vector<double> w;
+    std::vector<int> headP;
+    std::vector<int> headS;
+    std::vector<int> headPS;
+    std::vector<int> linkP;
+    std::vector<int> WP;
+    std::vector<int> WS;
+    std::vector<double> wP;
+    std::vector<double> wS;
     std::vector<bool> usedCell;
     int step;
     void write(std::string, bool);
@@ -138,6 +150,12 @@ int num_tri;
 std::vector<double> bezier_x;
 std::vector<double> bezier_z;
 double max_x, max_z;
+
+std::vector<double> R (3);
+std::vector<double> wT (3);
+std::vector<double> surf_point (3);
+double Rsq, rw, rwT;
+
 
 #include "Functions.h"
 #include "PearPotential.h"

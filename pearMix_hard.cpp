@@ -17,20 +17,18 @@ boost::random::uniform_01<> uni;
 
 int main(int argc, char** argv){
 
-	std::cout << "This version contains the neighbourhood list optimized for 2 pears in a pool of spheres!" << std::endl;
-
 	Config.Nc=2; //# of spherocylinder
-	Config.Ns=2398; //# of spheres
+	Config.Ns=1298; //# of spheres
 	seed=42;
-	rho0=0.5; //density
+	rho0=0.6; //density
 	pos_lambda = 0.02;
 	ori_lambda = 0.02;
 	vproc = 0.99;
     	Config.l.resize(3);
-    	Vratio = 0.04;
-	finstep = 1000000;
+    	Vratio = 0.005;
+	finstep = 100000000;
 	compstep = 100;
-	savestep = 100;
+	savestep = 50000;
 	logstep = 100;
 	backupstep = 100;
 	WallMove=false;
@@ -64,9 +62,8 @@ int main(int argc, char** argv){
 	a2=a1*(kth-2.0/3.0*aspect)/kth;
 	a3=a1*(kth+2.0/3.0*aspect)/kth;
 	b1 = aspect*a1; 
-	distN = 0.5*b1;
-	rlist = 2*sqrt(distN*distN+a1*a1)+0.02;
-	if(rlist < 2*(b1-distN)) rlist = 2*(b1-distN)+0.02;
+	distN = 0.5*a1*(aspect-1.0/aspect);
+	rlistP = 2*(b1-distN)+0.01;
 	
     	RHO = toString(rho0);
     	NC = toString(Config.Nc);
@@ -89,10 +86,9 @@ int main(int argc, char** argv){
 
     	Config.Vsys /= N;
 
-	if( Config.Ns != 0 ) rlist = 2*rsphere + 0.02;
-    	rlist_2 = rlist*rlist;  
-    	maxpos = 0.5*rlist;
-
+	rlistS = rsphere + 0.01;
+	if( Config.Ns != 0 ) maxpos = 2*rlistS;
+	else maxpos = rlistP;
 
 	gen.seed(seed);
 
@@ -119,38 +115,27 @@ int main(int argc, char** argv){
 			if(Config.step % logstep == 0) Config.writeLog(logfile);
 			if(Config.step % backupstep == 0){ 
 				
-				char oldname[] = "Save/Config.dat";
-				char newname[] = "Save/ConfigB.dat";
-				rename(oldname,newname);
+				std::string newname = "Save/ConfigB.dat";
 
-				std::ofstream File ("Save/status.txt");
+				rename(savefile.c_str(),newname.c_str());
 
-				File << 2 << std::endl;
-
-				File.close();
-				Config.write("Save/Config.dat",1);
-
-				File.open("Save/status.txt");
-
-				File << 1 << std::endl;
-
-				File.close();
+				Config.write(savefile,1);
 			}
 
            		acceptance = static_cast<double>(acc)/(100*N);
-			std::cout << Config.step << " " << acceptance << std::endl;
-            		if (acceptance > 0.55){
-                		if( pos_lambda < maxpos) pos_lambda += 0.05;
-                		else pos_lambda = maxpos;
-                		if( ori_lambda < maxpos) ori_lambda += 0.05;
-                		else ori_lambda = maxpos;
-            		}
-            		if (acceptance < 0.45){
-                		if( pos_lambda < 0.01 ) pos_lambda = 0.01;
-                		else pos_lambda -= 0.01;
-                		if( ori_lambda < 0.01 ) ori_lambda = 0.01;
-                		else ori_lambda -= 0.01;
-            		}
+			std::cout <<  Config.step << " " << acceptance << std::endl;
+			if (acceptance > 0.55){
+			    pos_lambda += 0.01;
+			    if( pos_lambda > maxpos) pos_lambda = maxpos;
+			    ori_lambda += 0.01;
+			    if( ori_lambda > maxpos) ori_lambda = maxpos;
+			}
+			if (acceptance < 0.45){
+			    pos_lambda -= 0.001;
+			    if( pos_lambda < 0.005 ) pos_lambda = 0.005;
+			    ori_lambda -= 0.001;
+			    if( ori_lambda < 0.005 ) ori_lambda = 0.005;
+			}
             		acc=0;
         	}
 		if(Config.step % compstep == 0 && WallMove) Compression_step();
@@ -158,9 +143,4 @@ int main(int argc, char** argv){
 	}
     	Config.write("Results/finalConfig.dat",1);
 
-    	std::ofstream File ("Save/status.txt");
-
-    	File << 0 << std::endl;
-
-    	File.close();
 }
