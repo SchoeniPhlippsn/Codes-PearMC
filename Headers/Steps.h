@@ -211,7 +211,7 @@ void Move_step(){
 				dsy = MovedParticle.pos[1]-dist_ori[1];
 				dsz = MovedParticle.pos[2]-dist_ori[2];
 
-				in_test = false;
+				in_test = true;
 				if(dsx < 0){
 					sx[0] = Config.WP[0]-1;
 					sx[1] = sx[0] -1;
@@ -385,9 +385,9 @@ void Move_step(){
 										R[1] = Config.part[newvv].pos[1] - MovedParticle.pos[1];
 										R[2] = Config.part[newvv].pos[2] - MovedParticle.pos[2];
 
-										if (R[0] > Config.l_2[0] || R[0] < -Config.l_2[0])  std::cout << "PPb(" << sx[ix] << "," << sy[iy] << ") (" << sx[0] << "," << sy[0] << ") " << R[0] << " " << Config.l_2[0] << " (" << bx[ix] << ",0," << lb[0] << " )" << std::endl;
-										if (R[1] > Config.l_2[1] || R[1] < -Config.l_2[1])  std::cout << "PPb(" << sx[ix] << "," << sy[iy] << ") (" << sx[0] << "," << sy[0] << ") " << R[1] << " " << Config.l_2[1] << " (" << by[iy] << ",1," << lb[1] << " )" <<std::endl;
-										if (R[2] > Config.l_2[2] || R[2] < -Config.l_2[2])  std::cout << "PPb(" << sx[ix] << "," << sz[iz] << ") (" << sx[0] << "," << sz[0] << ") " << R[2] << " " << Config.l_2[2] << " (" << bz[iz] << ",1," << lb[2] << " )" <<std::endl;
+										if (R[0] > Config.l_2[0] || R[0] < -Config.l_2[0])  std::cout << "PPbx(" << sx[ix] << "," << sx[0] << "," << Config.WP[0]-1 << ") " << R[0] << " " << Config.l_2[0] << " (" << bx[ix] << ",0," << lb[0] << " )" << std::endl;
+										if (R[1] > Config.l_2[1] || R[1] < -Config.l_2[1])  std::cout << "PPby(" << sy[iy] << "," << sy[1] << "," << Config.WP[1]-1 << ") " << R[1] << " " << Config.l_2[1] << " (" << by[iy] << ",0," << lb[1] << " )" << std::endl;
+										if (R[2] > Config.l_2[2] || R[2] < -Config.l_2[2])  std::cout << "PPbz(" << sz[iz] << "," << sz[0] << "," << Config.WP[2]-1 << ") " << R[2] << " " << Config.l_2[2] << " (" << bz[iz] << ",0," << lb[2] << " )" << std::endl;
 										overlapPear(); 
 									}
 									vv = Config.linkP[vv];
@@ -424,7 +424,7 @@ void Move_step(){
 
 				dszN = MovedParticle.pos[2]+dist_ori[2];
 
-				in_test=false;
+				in_test = true;
 				if(dsxN < 0){
 					sxN[0] = Config.WP[0]-1;
 					in_test = true;
@@ -1175,7 +1175,7 @@ void Compression_step(){
 			dsy = MovedParticle.pos[1]-dist_ori[1];
 			dsz = MovedParticle.pos[2]-dist_ori[2];
 
-			in_test = false;
+			in_test = true;
 			if(dsx < 0){
 				sx[0] = Config.WP[0]-1;
 				sx[1] = sx[0] -1;
@@ -1335,7 +1335,7 @@ void Compression_step(){
 
 			dszN = MovedParticle.pos[2]+dist_ori[2];
 
-			in_test=false;
+			in_test = true;
 			if(dsxN < 0){
 				sxN[0] = Config.WP[0]-1;
 				in_test = true;

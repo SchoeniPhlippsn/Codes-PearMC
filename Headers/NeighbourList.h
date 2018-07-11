@@ -17,24 +17,24 @@ void RenewList(){ // Initialise Neighbour List
 
 	for( int i=0; i<Config.Nc; i++){
 		dsx = Config.part[i].pos[0]-distN*Config.part[i].ori[0];
-		if(dsx < 0) sx[1]= 0;
+		if(dsx < 0) sx[1]= Config.WP[0]-1;
 		else{
 			sx[1] = dsx*Config.wP[0];
-			if(sx[1]>Config.WP[0]-1) sx[1] = Config.WP[0]-1; 
+			if(sx[1]>Config.WP[0]-1) sx[1] = 0; 
 		}
 
 		dsy = Config.part[i].pos[1]-distN*Config.part[i].ori[1];
-		if(dsy < 0) sy[1]= 0;
+		if(dsy < 0) sy[1]= Config.WP[1]-1;
 		else{
 			sy[1] = dsy*Config.wP[1];
-			if(sy[1]>Config.WP[1]-1) sy[1] = Config.WP[1]-1; 
+			if(sy[1]>Config.WP[1]-1) sy[1] = 0; 
 		}
 
 		dsz = Config.part[i].pos[2]-distN*Config.part[i].ori[2];
-		if(dsz < 0) sz[1]= 0;
+		if(dsz < 0) sz[1]= Config.WP[2]-1;
 		else{
 			sz[1] = dsz*Config.wP[2];
-			if(sz[1]>Config.WP[2]-1) sz[1] = Config.WP[2]-1; 
+			if(sz[1]>Config.WP[2]-1) sz[1] = 0; 
 		}
 
 		k = sx[1] + Config.WP[0]*(sy[1]+Config.WP[1]*sz[1]); 
@@ -47,24 +47,24 @@ void RenewList(){ // Initialise Neighbour List
 		}
 
 		dsx = Config.part[i].pos[0]+distN*Config.part[i].ori[0];
-		if(dsx < 0) sxN[1]= 0;
+		if(dsx < 0) sxN[1]= Config.WP[0]-1;
 		else{
 			sxN[1] = dsx*Config.wP[0];
-			if(sxN[1]>Config.WP[0]-1) sxN[1] = Config.WP[0]-1; 
+			if(sxN[1]>Config.WP[0]-1) sxN[1] = 0;
 		}
 
 		dsy = Config.part[i].pos[1]+distN*Config.part[i].ori[1];
-		if(dsy < 0) syN[1]= 0;
+		if(dsy < 0) syN[1]= Config.WP[1]-1;
 		else{
 			syN[1] = dsy*Config.wP[1];
-			if(syN[1]>Config.WP[1]-1) syN[1] = Config.WP[0]-1; 
+			if(syN[1]>Config.WP[1]-1) syN[1] = 0; 
 		}
 
 		dsz = Config.part[i].pos[2]+distN*Config.part[i].ori[2];
-		if(dsz < 0) szN[1]= 0;
+		if(dsz < 0) szN[1]= Config.WP[2]-1;
 		else{
 			szN[1] = dsz*Config.wP[2];
-			if(szN[1]>Config.WP[2]-1) szN[1] = Config.WP[2]-1; 
+			if(szN[1]>Config.WP[2]-1) szN[1] = 0; 
 		}
 
 		k = sxN[1] + Config.WP[0]*(syN[1]+Config.WP[1]*szN[1]); 

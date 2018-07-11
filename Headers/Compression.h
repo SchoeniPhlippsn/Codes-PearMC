@@ -40,6 +40,7 @@ void Compression(){
         RenewList();
        
 	Config.write(savefile,1);
+//	exit(0);
     }
     Compressing = false;
     vproc = 0.01;

@@ -4,6 +4,8 @@ Config.dat
 Meshes/Bezier*.txt
 Meshes/Pear*.inp
 Save/ConfigB.dat
+Save/Config_init.dat
+*txt
 run*
 err*
 *sh
