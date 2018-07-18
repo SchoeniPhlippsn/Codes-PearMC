@@ -45,29 +45,33 @@ void Compression(){
     Compressing = false;
     vproc = 0.01;
 
-    zahl = 0;
-    zahl1 = 0;
-    while( zahl < 10 ){ 
-        acc = 0;   
-        for( int i = 0; i < 10; i++) Move_step(); 
-        acceptance = static_cast<double>(acc)/(10*N);
-        zahl++;
-        if (acceptance > 0.55){
-            pos_lambda += 0.01;
-            if( pos_lambda > maxpos) pos_lambda = maxpos;
-            ori_lambda += 0.01;
-            if( ori_lambda > maxpos) ori_lambda = maxpos;
-            zahl=0;
-        }
-        if (acceptance < 0.45){
-            pos_lambda -= 0.001;
-            if( pos_lambda < 0.005 ) pos_lambda = 0.005;
-            ori_lambda -= 0.001;
-            if( ori_lambda < 0.005 ) ori_lambda = 0.005;
-            zahl=0;
-        }
-        
-        std::cout << acceptance << "\tpos_lambda = "<< pos_lambda << "\tand\tori_lambda = " << ori_lambda << std::endl;
+    if( pos_lambda < 0){ 
+	    pos_lambda= 0.02;
+	    ori_lambda= 0.02;
+	    zahl = 0;
+	    zahl1 = 0;
+	    while( zahl < 10 ){ 
+		acc = 0;   
+		for( int i = 0; i < 10; i++) Move_step(); 
+		acceptance = static_cast<double>(acc)/(10*N);
+		zahl++;
+		if (acceptance > 0.55){
+		    pos_lambda += 0.01;
+		    if( pos_lambda > maxpos) pos_lambda = maxpos;
+		    ori_lambda += 0.01;
+		    if( ori_lambda > maxpos) ori_lambda = maxpos;
+		    zahl=0;
+		}
+		if (acceptance < 0.45){
+		    pos_lambda -= 0.001;
+		    if( pos_lambda < 0.005 ) pos_lambda = 0.005;
+		    ori_lambda -= 0.001;
+		    if( ori_lambda < 0.005 ) ori_lambda = 0.005;
+		    zahl=0;
+		}
+		
+		std::cout << acceptance << "\tpos_lambda = "<< pos_lambda << "\tand\tori_lambda = " << ori_lambda << std::endl;
+	    }
     }
     zahl=0;
 }

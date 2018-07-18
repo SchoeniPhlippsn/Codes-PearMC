@@ -8,8 +8,8 @@ void system::write (std::string file, bool save){
         oFile << -l_2[2] << " " << l_2[2] << std::endl;
     }else{
         oFile << Nc << " " << Ns << std::endl;
+        oFile << step << " " << pos_lambda << " " << ori_lambda << std::endl;
         oFile << l[0] << " " << l[1] << " " << l[2] << std::endl;
-        oFile << step << std::endl;
     }
 
     for( v = 0 ; v < Nc; v++){
@@ -52,13 +52,18 @@ void system::read (std::string file){
     part.resize(Nc+Ns);
     l.resize(3);
     
+    iFile >> step >> pos_lambda >> ori_lambda;
+
+    if( pos_lambda > 2 ){
+	std::cerr << "Old Save file version! No information for the step sizes in second line [step move_step rot_step]" << std::endl;
+	exit(0);
+    }
+
     iFile >> l[0] >> l[1] >> l[2];
 
     l_2[0] = l[0]*0.5;
     l_2[1] = l[1]*0.5;
     l_2[2] = l[2]*0.5;
-
-    iFile >> step;
 
     Vbox=l[0]*l[1]*l[2];
 
