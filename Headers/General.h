@@ -14,6 +14,8 @@ double rcut_SPH;
 double rcut_PSPH;
 double rcut_PSPH_T;
 double rcut_P;
+double rcut_P_T;
+double rcut_P_II;
 double maxpos;
 long N; //# of particles
 long seed;
@@ -154,7 +156,8 @@ double max_x, max_z;
 std::vector<double> R (3);
 std::vector<double> wT (3);
 std::vector<double> surf_point (3);
-double Rsq, rw, rwT;
+double Rsq, rw, rwT, rw1, ww, www, wwww;
+double xlambda, xmu; 
 
 
 #include "Functions.h"

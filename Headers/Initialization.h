@@ -69,6 +69,8 @@ void Init(){
     	rcut_PSPH = (max_z+rsphere)*(max_z+rsphere);
     	rcut_PSPH_T = (rsphere + max_x)*(rsphere + max_x);
     	rcut_P = 4*max_z*max_z;
+    	rcut_P_T = (max_z+max_x)*(max_z+max_x);
+    	rcut_P_II = 4*max_x*max_x;
 	
 	ln.resize(2);
     

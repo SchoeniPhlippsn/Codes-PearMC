@@ -100,24 +100,66 @@ void overlapPear (){
 	Rsq = R[0]*R[0]+R[1]*R[1]+R[2]*R[2];
     
 	if(Rsq < rcut_P){
+        	rw = MovedParticle.ori[0]*R[0] + MovedParticle.ori[1]*R[1] + MovedParticle.ori[2]*R[2];
+       
+		rwT = Rsq - rw*rw;
+		if( rwT < rcut_P_T ){
+			rw1 = Config.part[newvv].ori[0]*R[0] + Config.part[newvv].ori[1]*R[1] + Config.part[newvv].ori[2]*R[2];
+	       
+			rwT = Rsq - rw1*rw1;
 
-		Config.part[newvv].trans[0][3] = R[0];	
-		Config.part[newvv].trans[1][3] = R[1];	
-		Config.part[newvv].trans[2][3] = R[2];	
+			if( rwT < rcut_P_T ){
+
+				ww = MovedParticle.ori[0]*Config.part[newvv].ori[0] + MovedParticle.ori[1]*Config.part[newvv].ori[1] + MovedParticle.ori[2]*Config.part[newvv].ori[2];
+				www = 1 - ww*ww;
+				if( www < 1e-4){ 
+					if(rwT < rcut_P_II){
+						Config.part[newvv].trans[0][3] = R[0];	
+						Config.part[newvv].trans[1][3] = R[1];	
+						Config.part[newvv].trans[2][3] = R[2];	
 
 
-		pear_mesh.UpdateTrans(id[1], Config.part[newvv].trans);
+						pear_mesh.UpdateTrans(id[1], Config.part[newvv].trans);
 
-		VCReport report;
+						VCReport report;
 
-		pear_mesh.Collide( &report );
+						pear_mesh.Collide( &report );
 
-		Config.part[newvv].trans[0][3] = 0;	
-		Config.part[newvv].trans[1][3] = 0;	
-		Config.part[newvv].trans[2][3] = 0;	
+						Config.part[newvv].trans[0][3] = 0;	
+						Config.part[newvv].trans[1][3] = 0;	
+						Config.part[newvv].trans[2][3] = 0;	
 
-		if(report.numObjPairs() > 0) inside = true;
+						if(report.numObjPairs() > 0) inside = true;
+					}
+				}else{
 
+					xlambda = rw-ww*rw1;
+					xmu = -rw1+ww*rw;
+
+					wwww = www*www;
+					rwT = Rsq*wwww + xlambda*xlambda + xmu*xmu - 2*xlambda*xmu*ww + 2*xmu*rw1*www-2*xlambda*rw*www;
+
+					if(rwT < rcut_P_II*wwww){
+						Config.part[newvv].trans[0][3] = R[0];	
+						Config.part[newvv].trans[1][3] = R[1];	
+						Config.part[newvv].trans[2][3] = R[2];	
+
+
+						pear_mesh.UpdateTrans(id[1], Config.part[newvv].trans);
+
+						VCReport report;
+
+						pear_mesh.Collide( &report );
+
+						Config.part[newvv].trans[0][3] = 0;	
+						Config.part[newvv].trans[1][3] = 0;	
+						Config.part[newvv].trans[2][3] = 0;	
+
+						if(report.numObjPairs() > 0) inside = true;
+					}
+				}
+			}
+		}
 	}
 }
 
