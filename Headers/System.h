@@ -102,7 +102,7 @@ void system::read (std::string file){
 	if(step < 100) part[v].pos_msd[2] =0;
 
 	sqrtz = 1-part[v].ori[2]*part[v].ori[2];
-	if(sqrtz > 1e-4){
+	if(sqrtz > 1e-5){
 		sqrtz = 1/sqrt(sqrtz);
 		part[v].trans[0][0] = part[v].ori[2]*part[v].ori[0]*sqrtz;
 		part[v].trans[0][1] = -part[v].ori[1]*sqrtz;
