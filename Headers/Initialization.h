@@ -72,7 +72,7 @@ void Init(){
     	rcut_P_T = (max_z+max_x)*(max_z+max_x);
     	rcut_P_II = 4*max_x*max_x;
 	
-	ln.resize(2);
+	ln.resize(3);
     
 	std::cout<<"Interface inserted with " << bezier_x.size() << " vertices\n";
 
@@ -96,18 +96,18 @@ void Init(){
 	}
 	DatFile.close();
 
-    	Config.l.resize(3);
-    	Config.l_2.resize(3);
+    	l.resize(3);
+    	l_2.resize(3);
 
 
         initCompress=false;
 
-    	Config.WS.resize(3,0); 
-    	Config.wS.resize(3,0); 
+    	WS.resize(3,0); 
+    	wS.resize(3,0); 
 
-    	Config.WP.resize(3,0); 
-    	Config.wP.resize(3,0); 
-        Config.read(savefile);
+    	WP.resize(3,0); 
+    	wP.resize(3,0); 
+        read(savefile);
 
     	RenewList();
 }

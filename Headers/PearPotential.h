@@ -11,7 +11,7 @@ void overlapSpherePear (){
 
     	if(Rsq < rcut_PSPH){
         
-        	rw = Config.part[newvv].ori[0]*R[0] + Config.part[newvv].ori[1]*R[1] + Config.part[newvv].ori[2]*R[2];
+        	rw = part[newvv].ori[0]*R[0] + part[newvv].ori[1]*R[1] + part[newvv].ori[2]*R[2];
        
 		rwT = Rsq - rw*rw;
 
@@ -19,9 +19,9 @@ void overlapSpherePear (){
 			if( rwT < 1e-4 ) inside = true;
 			else{
 				rwT = sqrt(rwT);
-                            	wT[0] = (R[0] - rw*Config.part[newvv].ori[0])/rwT;
-                            	wT[1] = (R[1] - rw*Config.part[newvv].ori[1])/rwT;
-                            	wT[2] = (R[2] - rw*Config.part[newvv].ori[2])/rwT;
+                            	wT[0] = (R[0] - rw*part[newvv].ori[0])/rwT;
+                            	wT[1] = (R[1] - rw*part[newvv].ori[1])/rwT;
+                            	wT[2] = (R[2] - rw*part[newvv].ori[2])/rwT;
 
 				in_test = false;
 
@@ -34,9 +34,9 @@ void overlapSpherePear (){
 						}
 					}
 
-					surf_point[0] = bezier_z[i]*Config.part[newvv].ori[0] + bezier_x[i]*wT[0] - R[0];
-					surf_point[1] = bezier_z[i]*Config.part[newvv].ori[1] + bezier_x[i]*wT[1] - R[1];
-					surf_point[2] = bezier_z[i]*Config.part[newvv].ori[2] + bezier_x[i]*wT[2] - R[2];
+					surf_point[0] = bezier_z[i]*part[newvv].ori[0] + bezier_x[i]*wT[0] - R[0];
+					surf_point[1] = bezier_z[i]*part[newvv].ori[1] + bezier_x[i]*wT[1] - R[1];
+					surf_point[2] = bezier_z[i]*part[newvv].ori[2] + bezier_x[i]*wT[2] - R[2];
 					Rsq = surf_point[0]*surf_point[0] + surf_point[1]*surf_point[1] + surf_point[2]*surf_point[2];
 
 					if(Rsq <  rsphere*rsphere){
@@ -104,35 +104,57 @@ void overlapPear (){
        
 		rwT = Rsq - rw*rw;
 		if( rwT < rcut_P_T ){
-			rw1 = Config.part[newvv].ori[0]*R[0] + Config.part[newvv].ori[1]*R[1] + Config.part[newvv].ori[2]*R[2];
+			rw1 = part[newvv].ori[0]*R[0] + part[newvv].ori[1]*R[1] + part[newvv].ori[2]*R[2];
 	       
 			rwT = Rsq - rw1*rw1;
 
 			if( rwT < rcut_P_T ){
 
-				ww = MovedParticle.ori[0]*Config.part[newvv].ori[0] + MovedParticle.ori[1]*Config.part[newvv].ori[1] + MovedParticle.ori[2]*Config.part[newvv].ori[2];
+				ww = MovedParticle.ori[0]*part[newvv].ori[0] + MovedParticle.ori[1]*part[newvv].ori[1] + MovedParticle.ori[2]*part[newvv].ori[2];
 				www = 1 - ww*ww;
 				if( www < 1e-4){ 
 					if(rwT < rcut_P_II){
-						Config.part[newvv].trans[0][3] = R[0];	
-						Config.part[newvv].trans[1][3] = R[1];	
-						Config.part[newvv].trans[2][3] = R[2];	
+						part[newvv].trans[0][3] = R[0];	
+						part[newvv].trans[1][3] = R[1];	
+						part[newvv].trans[2][3] = R[2];	
 
 
-						pear_mesh.UpdateTrans(id[1], Config.part[newvv].trans);
+						pear_mesh.UpdateTrans(id[1], part[newvv].trans);
 
 						VCReport report;
 
 						pear_mesh.Collide( &report );
 
-						Config.part[newvv].trans[0][3] = 0;	
-						Config.part[newvv].trans[1][3] = 0;	
-						Config.part[newvv].trans[2][3] = 0;	
+						part[newvv].trans[0][3] = 0;	
+						part[newvv].trans[1][3] = 0;	
+						part[newvv].trans[2][3] = 0;	
 
 						if(report.numObjPairs() > 0) inside = true;
 					}
 				}else{
+					xlambda = (rw-ww*rw1)/www;
+					xmu = xlambda*ww-rw1;
 
+					if( fabs(xlambda) > max_z || fabs(xmu) > max_z ){
+
+						if(fabs(xlambda) > fabs(xmu) ){
+							if(xlambda < 0 ) xlambda = -max_z;
+							else xlambda = max_z;
+							
+							xmu = xlambda*ww-rw1;
+							if(xmu < -max_z) xmu = -max_z;
+							else if(xmu > max_z) xmu = max_z; 
+						}else{
+							if(xmu < 0 ) xmu = -max_z;
+							else xmu = max_z;
+							
+							xlambda = xmu*ww+rw;
+							if(xlambda < -max_z) xlambda = -max_z;
+							else if(xlambda > max_z) xlambda = max_z; 
+						}
+
+					}
+/*
 					xlambda = rw-ww*rw1;
 					xmu = -rw1+ww*rw;
 
@@ -140,20 +162,24 @@ void overlapPear (){
 					rwT = Rsq*wwww + xlambda*xlambda + xmu*xmu - 2*xlambda*xmu*ww + 2*xmu*rw1*www-2*xlambda*rw*www;
 
 					if(rwT < rcut_P_II*wwww){
-						Config.part[newvv].trans[0][3] = R[0];	
-						Config.part[newvv].trans[1][3] = R[1];	
-						Config.part[newvv].trans[2][3] = R[2];	
+*/
+					
+					rwT = Rsq + xlambda*xlambda +xmu*xmu + 2*(xmu*rw1-xlambda*(rw+xmu*ww));
+					if(rwT < rcut_P_II){
+						part[newvv].trans[0][3] = R[0];	
+						part[newvv].trans[1][3] = R[1];	
+						part[newvv].trans[2][3] = R[2];	
 
 
-						pear_mesh.UpdateTrans(id[1], Config.part[newvv].trans);
+						pear_mesh.UpdateTrans(id[1], part[newvv].trans);
 
 						VCReport report;
 
 						pear_mesh.Collide( &report );
 
-						Config.part[newvv].trans[0][3] = 0;	
-						Config.part[newvv].trans[1][3] = 0;	
-						Config.part[newvv].trans[2][3] = 0;	
+						part[newvv].trans[0][3] = 0;	
+						part[newvv].trans[1][3] = 0;	
+						part[newvv].trans[2][3] = 0;	
 
 						if(report.numObjPairs() > 0) inside = true;
 					}

@@ -1,4 +1,4 @@
-void system::write (std::string file, bool save){
+void write (std::string file, bool save){
 
     std::ofstream oFile (file.c_str() );
     if(!save){
@@ -12,7 +12,7 @@ void system::write (std::string file, bool save){
         oFile << l[0] << " " << l[1] << " " << l[2] << std::endl;
     }
 
-    for( v = 0 ; v < Nc; v++){
+    for( int v = 0 ; v < Nc; v++){
 
         if(!save){ 
 
@@ -25,7 +25,7 @@ void system::write (std::string file, bool save){
             oFile <<  part[v].ori[0] << " " << part[v].ori[1] << " " << part[v].ori[2] << std::endl; 
         }
     }
-    for( v = Nc ; v < part.size(); v++){
+    for( int v = Nc ; v < part.size(); v++){
 
         if(!save){ 
             oFile << "SPHERE ";
@@ -40,7 +40,7 @@ void system::write (std::string file, bool save){
     oFile.close();
 }
 
-void system::read (std::string file){
+void read (std::string file){
 
     std::ifstream iFile (file.c_str() );
 
@@ -85,7 +85,7 @@ void system::read (std::string file){
     linkP.resize(Nc+part.size()); 
     for( int i=0; i<linkP.size(); i++) linkP[i] = -1;
 
-    for( v = 0 ; v < Nc; v++){
+    for( int v = 0 ; v < Nc; v++){
         part[v].pos.resize(3);
         part[v].pos_msd.resize(3);
         part[v].ori.resize(3);
@@ -379,7 +379,7 @@ void system::read (std::string file){
     for( int i=0; i<headPS.size(); i++) headPS[i] = -1;
 
 
-    for( v = Nc ; v < part.size(); v++){
+    for( int v = Nc ; v < part.size(); v++){
         part[v].pos.resize(3);
         part[v].pos_msd.resize(3);
         part[v].ori.resize(3);
@@ -601,19 +601,19 @@ void system::read (std::string file){
     iFile.close();
 }
 
-void system::writeLog (std::string file){
+void writeLog (std::string file){
 
     std::fstream fFile (file.c_str(), std::fstream::app );
 
     msd = 0;
 
-    for( v = 0 ; v < Nc; v++) msd += part[v].pos_msd[0]*part[v].pos_msd[0]+part[v].pos_msd[1]*part[v].pos_msd[1] + part[v].pos_msd[2]*part[v].pos_msd[2];
+    for( int v = 0 ; v < Nc; v++) msd += part[v].pos_msd[0]*part[v].pos_msd[0]+part[v].pos_msd[1]*part[v].pos_msd[1] + part[v].pos_msd[2]*part[v].pos_msd[2];
     msd = msd/Nc;
     
     fFile << step << msd;
 
     msd = 0;
-    for( v = Nc ; v < part.size() ; v++) msd += part[v].pos_msd[0]*part[v].pos_msd[0]+part[v].pos_msd[1]*part[v].pos_msd[1]+ part[v].pos_msd[2]*part[v].pos_msd[2];
+    for( int v = Nc ; v < part.size() ; v++) msd += part[v].pos_msd[0]*part[v].pos_msd[0]+part[v].pos_msd[1]*part[v].pos_msd[1]+ part[v].pos_msd[2]*part[v].pos_msd[2];
     msd = msd/Ns;
 
     fFile <<  "\t" << msd << std::endl;

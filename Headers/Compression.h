@@ -1,10 +1,10 @@
 void Compression(){
 
-    if(fabs(rho0-Config.rhoV) > 1e-4){
-        Config.step=0;
-	rhoInit = Config.rhoV;
+    if(fabs(rho0-rhoV) > 1e-4){
+        step=0;
+	rhoInit = rhoV;
 	Compressing = true;	
-        while (rho0>Config.rhoV){
+        while (rho0>rhoV){
             acc = 0;   
          //   if(initCompress) exit(0);
             if(initCompress) Move_step();
@@ -13,33 +13,33 @@ void Compression(){
             std::cout << acceptance << std::endl;
         }
 	
-        std::cout <<  Config.rhoV  << " " << rho0 << std::endl;
+        std::cout <<  rhoV  << " " << rho0 << std::endl;
         
-        Config.rhoV = rho0;
-        Config.rhoN = Config.rhoV/Config.Vsys;
-        Config.Vbox = N/Config.rhoN;
+        rhoV = rho0;
+        rhoN = rhoV/Vsys;
+        Vbox = N/rhoN;
         
-        ln[0] = pow(Config.Vbox, 1.0/3.0)/Config.l[0];
-        ln[1] = pow(Config.Vbox, 1.0/3.0)/Config.l[1];
-        ln[2] = pow(Config.Vbox, 1.0/3.0)/Config.l[2];
+        ln[0] = pow(Vbox, 1.0/3.0)/l[0];
+        ln[1] = pow(Vbox, 1.0/3.0)/l[1];
+        ln[2] = pow(Vbox, 1.0/3.0)/l[2];
 
-        Config.l[0] *= ln[0];
-        Config.l[1] *= ln[1];
-        Config.l[2] *= ln[2];
+        l[0] *= ln[0];
+        l[1] *= ln[1];
+        l[2] *= ln[2];
 
-        for( int i=0; i < Config.part.size(); i++){
-                Config.part[i].pos[0] *= ln[0];
-                Config.part[i].pos[1] *= ln[1];
-                Config.part[i].pos[2] *= ln[2];
+        for( int i=0; i < part.size(); i++){
+                part[i].pos[0] *= ln[0];
+                part[i].pos[1] *= ln[1];
+                part[i].pos[2] *= ln[2];
 
-                Config.part[i].pos_msd[0] = 0;
-                Config.part[i].pos_msd[1] = 0;
-                Config.part[i].pos_msd[2] = 0;
+                part[i].pos_msd[0] = 0;
+                part[i].pos_msd[1] = 0;
+                part[i].pos_msd[2] = 0;
         }
 
         RenewList();
        
-	Config.write(savefile,1);
+	write(savefile,1);
 //	exit(0);
     }
     Compressing = false;
