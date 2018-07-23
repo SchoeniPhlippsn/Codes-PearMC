@@ -12,8 +12,12 @@
 boost::random::mt19937 gen;	// random number generator [0,1]
 boost::random::uniform_01<> uni;
 
+#ifdef POLY
+#include "Headers/Poly/Headers.h"
+#else
+#include "Headers/Mono/Headers.h"
+#endif
 
-#include "Headers/Headers.h"
 
 int main(int argc, char** argv){
 
@@ -62,37 +66,6 @@ int main(int argc, char** argv){
 	a2=a1*(kth-2.0/3.0*aspect)/kth;
 	a3=a1*(kth+2.0/3.0*aspect)/kth;
 	b1 = aspect*a1; 
-	distN = 0.5*a1*(aspect-1.0/aspect);
-	rlistP = 2*(b1-distN)+0.01;
-	
-    	RHO = toString(rho0);
-    	NC = toString(Nc);
-    	NS = toString(Ns);
-    	VR = toString(Vratio);
-    	KTH = toString(kth);
-    	ASP = toString(aspect);
-	
-    	//Vsys = (2.65072*a1*a1*b1+0.687223*a1*a2*b1+0.147262*a2*a2*b1+0.687223*a1*a3*b1+0.147262*a3*a3*b1);       
-
-    	std::cout << "V_c="<< Vsys << std::endl;
-
-    	rsphere = pow(3.0/4.0*Vratio*Vsys/M_PI,1.0/3.0);
-
-    	std::cout << rsphere << std::endl;
-
-    	Vsys = (Nc + Ns*Vratio)*Vsys;
-
-    	N = Nc + Ns;
-
-    	Vsys /= N;
-
-	rlistS = rsphere + 0.01;
-	if( Ns != 0 ) maxpos = 2*rlistS;
-	else maxpos = rlistP;
-
-	gen.seed(seed);
-
-    	step = 0;
     	std::cout << "Starting Initialisation of the system!" << std::endl; 
 	Init();
     	std::cout << std::endl;

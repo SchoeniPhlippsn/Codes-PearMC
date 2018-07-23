@@ -54,12 +54,20 @@ void read (std::string file){
     
     iFile >> step >> pos_lambda >> ori_lambda;
 
-    if( pos_lambda > 2 ){
-	std::cerr << "Old Save file version! No information for the step sizes in second line [step move_step rot_step]" << std::endl;
-	exit(0);
-    }
 
-    iFile >> l[0] >> l[1] >> l[2];
+    if( step < 100 && step != 0){
+	std::cerr << "Old Save file version! No information for the step sizes in second line [step move_step rot_step]" << std::endl;
+	std::cerr << "I try to convert it :)" << std::endl;
+	
+	iFile >> l[2] >> step;
+	l[0]= l[2];
+	l[1]= l[2];
+    	
+	pos_lambda = -1;
+	ori_lambda = 0.02;
+
+	std:: cout << step << " " << pos_lambda << " " << ori_lambda << " " << l[2] << std::endl;
+    }else iFile >> l[0] >> l[1] >> l[2];
 
     l_2[0] = l[0]*0.5;
     l_2[1] = l[1]*0.5;
@@ -92,6 +100,9 @@ void read (std::string file){
 	part[v].already = false;
 
         iFile >> part[v].pos[0] >> part[v].pos[1] >> part[v].pos[2] >> part[v].pos_msd[0] >> part[v].pos_msd[1] >> part[v].pos_msd[2] >> part[v].ori[0]  >> part[v].ori[1] >> part[v].ori[2]; 
+
+//	std::cout << part[v].pos[0] << " " << part[v].pos[1] << " " << part[v].pos[2] << " " << part[v].pos_msd[0] << " " << part[v].pos_msd[1] << " " << part[v].pos_msd[2] << " " << part[v].ori[0]  << " " << part[v].ori[1] << " " << part[v].ori[2] << std::endl;
+//	exit(0);
 
 	if(part[v].pos[0] < 0 ) part[v].pos[0] += l[0];
 	if(part[v].pos[1] < 0 ) part[v].pos[1] += l[1];

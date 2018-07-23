@@ -9,11 +9,7 @@ const double two_pi = 2*M_PI;
 double distN;
 
 //hardWalls main
-double rlistS;
 double rlistP;
-double rcut_SPH;
-double rcut_PSPH;
-double rcut_PSPH_T;
 double rcut_P;
 double rcut_P_T;
 double rcut_P_II;
@@ -27,10 +23,10 @@ long logstep;
 long backupstep;
 long acc;
 double rho0, rhoInit;
+double norm;
 double Vratio;
 double Vn;
 double powVn;
-double rsphere;
 double pos_lambda;
 double ori_lambda;
 double vproc;
@@ -55,25 +51,10 @@ double dsxN;
 double dsyN;
 double dszN;
 
-std::vector<int> sx (5);
-std::vector<int> sy (5);
-std::vector<int> sz (5);
-
-std::vector<int> sxN (3);
-std::vector<int> syN (3);
-std::vector<int> szN (3);
-
-std::vector<int> bx (5,0);
-std::vector<int> by (5,0);
-std::vector<int> bz (5,0);
-
-int bsx,bsy;
-
-std::vector<double> lb (3);
+std::vector<std::vector<int> > s_n;
+std::vector<int> s_nn (5);
 
 std::vector<double> ln;
-
-std::vector<double> dist_ori (3);
 
 bool inside, in_test;
 bool Compressing;
@@ -102,12 +83,14 @@ class teilchen{
     public:
         
     std::vector<double> pos;       	// position of the particle
-    std::vector<double> ori;      	// orientation of the particle
+    std::vector<double> dist_ori;      	// orientation of the particle
     std::vector<double> pos_msd;       	// position of the particle
     double trans[4][4];
-    bool already;
     int cell;
+    int s[3];
     int cellN;
+    int sN[3];
+    bool already;
 
         private:
 };
@@ -124,13 +107,9 @@ int Nc;
 int Ns;
 double msd;
 std::vector<int> headP;
-std::vector<int> headS;
-std::vector<int> headPS;
 std::vector<int> linkP;
 std::vector<int> WP;
-std::vector<int> WS;
 std::vector<double> wP;
-std::vector<double> wS;
 std::vector<bool> usedCell;
 int step;
 void write(std::string, bool);
@@ -140,13 +119,9 @@ void writeLog(std::string);
 class teilchen MovedParticle;
 
 int num_tri;
-std::vector<double> bezier_x;
-std::vector<double> bezier_z;
 double max_x, max_z;
 
 std::vector<double> R (3);
-std::vector<double> wT (3);
-std::vector<double> surf_point (3);
 double Rsq, rw, rwT, rw1, ww, www, wwww;
 double xlambda, xmu; 
 

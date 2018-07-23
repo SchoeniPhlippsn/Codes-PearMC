@@ -1,5 +1,31 @@
 void Init(){
 
+    	RHO = toString(rho0);
+    	NC = toString(Nc);
+    	NS = toString(Ns);
+    	VR = toString(Vratio);
+    	KTH = toString(kth);
+    	ASP = toString(aspect);
+	
+    	//Vsys = (2.65072*a1*a1*b1+0.687223*a1*a2*b1+0.147262*a2*a2*b1+0.687223*a1*a3*b1+0.147262*a3*a3*b1);       
+
+    	std::cout << "V_c="<< Vsys << std::endl;
+
+    	rsphere = pow(3.0/4.0*Vratio*Vsys/M_PI,1.0/3.0);
+
+    	std::cout << rsphere << std::endl;
+
+    	Vsys = (Nc + Ns*Vratio)*Vsys;
+
+    	N = Nc + Ns;
+
+    	Vsys /= N;
+
+	rlistS = rsphere + 0.01;
+	gen.seed(seed);
+
+    	step = 0;
+
 	for (int i=0; i<2; i++){
 		file_pre = "Meshes/Pear" + ASP + "-" + KTH + ".inp";
 		std::ifstream iFile(file_pre.c_str());
@@ -72,6 +98,15 @@ void Init(){
     	rcut_P_T = (max_z+max_x)*(max_z+max_x);
     	rcut_P_II = 4*max_x*max_x;
 	
+
+	rlistP = 0.5*(sqrt(3*b1*b1-2*b1*max_x+3*max_x*max_x)-b1+max_x);
+	distN = b1-rlistP;
+	rlistP = 2*rlistP+0.01; 
+	if( Ns != 0 ) maxpos = 2*rlistS;
+	else maxpos = rlistP;
+
+
+
 	ln.resize(3);
     
 	std::cout<<"Interface inserted with " << bezier_x.size() << " vertices\n";

@@ -10,9 +10,9 @@ void Move_step(){
 
         	inside = false;
 
-		phi = two_pi*uni(gen);
+		phi = 2*M_PI*uni(gen);
 		theta = acos(2*uni(gen) - 1);				
-		cosphi = uni(gen)*pos_lambda;
+		cosphi = uni(gen);
 
 		costheta = cos(theta)*sin(phi)*cosphi;
 		sintheta = sin(theta)*sin(phi)*cosphi;
@@ -24,9 +24,9 @@ void Move_step(){
                         	MovedParticle.pos[1] = MovedParticle.pos[1] + sintheta*pos_lambda;
                         	MovedParticle.pos[2] = MovedParticle.pos[2] + cosphi*pos_lambda;
 
-				MovedParticle.pos_msd[0] += (MovedParticle.pos[0]-Config.part[randP].pos[0]);
-				MovedParticle.pos_msd[1] += (MovedParticle.pos[1]-Config.part[randP].pos[1]);
-				MovedParticle.pos_msd[2] += (MovedParticle.pos[2]-Config.part[randP].pos[2]);
+				MovedParticle.pos_msd[0] += (MovedParticle.pos[0]-part[randP].pos[0]);
+				MovedParticle.pos_msd[1] += (MovedParticle.pos[1]-part[randP].pos[1]);
+				MovedParticle.pos_msd[2] += (MovedParticle.pos[2]-part[randP].pos[2]);
 
                     }else{
                         	MovedParticle.ori[0] = MovedParticle.ori[0] + costheta*ori_lambda;
@@ -179,6 +179,15 @@ void Move_step(){
 
 
 			if(!inside){
+				if( MovedParticle.pos[0] > l[0] ) MovedParticle.pos[0] -= l[0];
+				else if( MovedParticle.pos[0] < 0 ) MovedParticle.pos[0] += l[0];
+			
+				if( MovedParticle.pos[1] > l[1] ) MovedParticle.pos[1] -= l[1];
+				else if( MovedParticle.pos[1] < 0 ) MovedParticle.pos[1] += l[1];
+	
+				if( MovedParticle.pos[2] > l[2] ) MovedParticle.pos[2] -= l[2];
+				else if( MovedParticle.pos[2] < 0 ) MovedParticle.pos[2] += l[2];
+
 				dist_ori[0] = distN*MovedParticle.ori[0];
 				dist_ori[1] = distN*MovedParticle.ori[1];
 				dist_ori[2] = distN*MovedParticle.ori[2];
@@ -365,9 +374,9 @@ void Move_step(){
 										R[1] = part[newvv].pos[1] - MovedParticle.pos[1];
 										R[2] = part[newvv].pos[2] - MovedParticle.pos[2];
 
-										if (R[0] > l_2[0] || R[0] < -l_2[0])  std::cout << "PPbx(" << sx[ix] << "," << sx[0] << "," << WP[0]-1 << ") " << R[0] << " " << l_2[0] << " (" << bx[ix] << ",0," << lb[0] << " )" << std::endl;
-										if (R[1] > l_2[1] || R[1] < -l_2[1])  std::cout << "PPby(" << sy[iy] << "," << sy[1] << "," << WP[1]-1 << ") " << R[1] << " " << l_2[1] << " (" << by[iy] << ",0," << lb[1] << " )" << std::endl;
-										if (R[2] > l_2[2] || R[2] < -l_2[2])  std::cout << "PPbz(" << sz[iz] << "," << sz[0] << "," << WP[2]-1 << ") " << R[2] << " " << l_2[2] << " (" << bz[iz] << ",0," << lb[2] << " )" << std::endl;
+//										if (R[0] > l_2[0] || R[0] < -l_2[0])  std::cout << "PPbx(" << sx[ix] << "," << sx[0] << "," << WP[0]-1 << ") " << R[0] << " " << l_2[0] << " (" << bx[ix] << ",0," << lb[0] << " )" << std::endl;
+//										if (R[1] > l_2[1] || R[1] < -l_2[1])  std::cout << "PPby(" << sy[iy] << "," << sy[1] << "," << WP[1]-1 << ") " << R[1] << " " << l_2[1] << " (" << by[iy] << ",0," << lb[1] << " )" << std::endl;
+//										if (R[2] > l_2[2] || R[2] < -l_2[2])  std::cout << "PPbz(" << sz[iz] << "," << sz[0] << "," << WP[2]-1 << ") " << R[2] << " " << l_2[2] << " (" << bz[iz] << ",0," << lb[2] << " )" << std::endl;
 										overlapPear(); 
 									}
 									vv = linkP[vv];
@@ -552,9 +561,9 @@ void Move_step(){
 											R[0] = part[newvv].pos[0] - MovedParticle.pos[0];
 											R[1] = part[newvv].pos[1] - MovedParticle.pos[1];
 											R[2] = part[newvv].pos[2] - MovedParticle.pos[2];
-											if (R[0] > l_2[0] || R[0] < -l_2[0])  std::cout << "PPt(" << sxN[ix] << "," << syN[iy] << ") (" << sxN[0] << "," << syN[0] << ") " << R[0] << " " << l_2[0] << " (" << bx[ix] << ",0," << lb[0] << " )" << std::endl;
-											if (R[1] > l_2[1] || R[1] < -l_2[1])  std::cout << "PPt(" << sxN[ix] << "," << syN[iy] << ") (" << sxN[0] << "," << syN[0] << ") " << R[1] << " " << l_2[1] << " (" << by[iy] << ",1," << lb[1] << " )" <<std::endl;
-											if (R[2] > l_2[2] || R[2] < -l_2[2])  std::cout << "PPt(" << sxN[ix] << "," << szN[iz] << ") (" << sxN[0] << "," << szN[0] << ") " << R[2] << " " << l_2[2] << " (" << bz[iz] << ",1," << lb[2] << " )" <<std::endl;
+//											if (R[0] > l_2[0] || R[0] < -l_2[0])  std::cout << "PPt(" << sxN[ix] << "," << syN[iy] << ") (" << sxN[0] << "," << syN[0] << ") " << R[0] << " " << l_2[0] << " (" << bx[ix] << ",0," << lb[0] << " )" << std::endl;
+//											if (R[1] > l_2[1] || R[1] < -l_2[1])  std::cout << "PPt(" << sxN[ix] << "," << syN[iy] << ") (" << sxN[0] << "," << syN[0] << ") " << R[1] << " " << l_2[1] << " (" << by[iy] << ",1," << lb[1] << " )" <<std::endl;
+//											if (R[2] > l_2[2] || R[2] < -l_2[2])  std::cout << "PPt(" << sxN[ix] << "," << szN[iz] << ") (" << sxN[0] << "," << szN[0] << ") " << R[2] << " " << l_2[2] << " (" << bz[iz] << ",1," << lb[2] << " )" <<std::endl;
 											overlapPear(); 
 										}
 										vv = linkP[vv];
