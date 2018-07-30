@@ -1,49 +1,51 @@
-void write (std::string file, bool save){
+void writeSave (){
 
-    std::ofstream oFile (file.c_str() );
-    if(!save){
-        oFile << Nc + Ns << std::endl;
-        oFile << -l_2[0] << " " << l_2[0] << std::endl;
-        oFile << -l_2[1] << " " << l_2[1] << std::endl;
-        oFile << -l_2[2] << " " << l_2[2] << std::endl;
-    }else{
-        oFile << Nc << " " << Ns << std::endl;
-        oFile << step << " " << pos_lambda << " " << ori_lambda << std::endl;
-        oFile << l[0] << " " << l[1] << " " << l[2] << std::endl;
-    }
+    oFile.open(savefile.c_str() );
+    oFile << Nc << " " << Ns << std::endl;
+    oFile << step << " " << pos_lambda << " " << ori_lambda << std::endl;
+    oFile << lx << " " << ly << " " << lz << std::endl;
 
     for( int v = 0 ; v < Nc; v++){
-        if(!save){ 
-
-            oFile << "PEAR(" << aspect << "," << kth << ") ";
-            oFile <<  part[v].pos[0] - int(part[v].pos[0]/l_2[0])*l[0] << " " << part[v].pos[1] - int(part[v].pos[1]/l_2[1])*l[1] << " " << part[v].pos[2] - int(part[v].pos[2]/l_2[2])*l[2] << " ";
-            oFile << part[v].trans[0][0] << " " << part[v].trans[1][0] << " " << part[v].trans[2][0]  << " " << part[v].trans[0][1] << " " << part[v].trans[1][1] << " " << part[v].trans[2][1] << " " <<  part[v].trans[0][2] << " " << part[v].trans[1][2] << " " << part[v].trans[2][2] << " " << 1 << std::endl; 
-        }else{
-            oFile <<  part[v].pos[0] << " " << part[v].pos[1] << " " << part[v].pos[2] << " "; 
-            oFile <<  part[v].pos_msd[0] << " " << part[v].pos_msd[1] << " " << part[v].pos_msd[2] << " "; 
+            oFile <<  posx[v] << " " << posy[v] << " " << posz[v] << " "; 
+            oFile <<  pos_msdx[v] << " " << pos_msdy[v] << " " << pos_msdz[v] << " "; 
             oFile <<  part[v].trans[0][2] << " " << part[v].trans[1][2] << " " << part[v].trans[2][2] << std::endl; 
-        }
     }
     oFile.close();
 }
 
-void read (std::string file){
 
-    std::ifstream iFile (file.c_str() );
+void writeConfig (){
+
+    oFile.open(file_name.c_str() );
+    oFile << Nc + Ns << std::endl;
+    oFile << -lx_2 << " " << lx_2 << std::endl;
+    oFile << -ly_2 << " " << ly_2 << std::endl;
+    oFile << -lz_2 << " " << lz_2 << std::endl;
+
+    for( int v = 0 ; v < Nc; v++){
+        oFile << "PEAR(" << aspect << "," << kth << ") ";
+        oFile <<  posx[v] - int(posx[v]/lx_2)*lx << " " << posy[v] - int(posy[v]/ly_2)*ly << " " << posz[v] - int(posz[v]/lz_2)*lz << " ";
+        oFile << part[v].trans[0][0] << " " << part[v].trans[1][0] << " " << part[v].trans[2][0]  << " " << part[v].trans[0][1] << " " << part[v].trans[1][1] << " " << part[v].trans[2][1] << " " <<  part[v].trans[0][2] << " " << part[v].trans[1][2] << " " << part[v].trans[2][2] << " " << 1 << std::endl; 
+    }
+    oFile.close();
+}
+
+void read (){
+
+    iFile.open(savefile.c_str() );
 
     if(!iFile){
-        std::cerr << "Can not read " << file << "!" << std::endl;
+        std::cerr << "Can not read " << savefile << "!" << std::endl;
         exit(-1);
     }
     iFile >> Nc >> Ns;
 
     if(Ns != 0){
-	std::cerr << "Save/Config.dat does not contain monodisperse data! Please compile file again :)" << std::endl;
+	std::cerr << "Save/Config.dat does not contain monodisperse data! Please compile version for polydisperse data [make] :)" << std::endl;
 	exit(0);
     }
 
     part.resize(Nc);
-    l.resize(3);
     
     iFile >> step >> pos_lambda >> ori_lambda;
 
@@ -52,54 +54,54 @@ void read (std::string file){
 	std::cerr << "Old Save file version! No information for the step sizes in second line [step move_step rot_step]" << std::endl;
 	std::cerr << "I try to convert it :)" << std::endl;
 	
-	iFile >> l[2] >> step;
-	l[0]= l[2];
-	l[1]= l[2];
+	iFile >> lz >> step;
+	lx = lz;
+	ly = lz;
     	
 	pos_lambda = -1;
 	ori_lambda = 0.02;
 
-	std:: cout << step << " " << pos_lambda << " " << ori_lambda << " " << l[2] << std::endl;
-    }else iFile >> l[0] >> l[1] >> l[2];
+	std:: cout << step << " " << pos_lambda << " " << ori_lambda << " " << lz << std::endl;
+    }else iFile >> lx >> ly >> lz;
 
-    l_2[0] = l[0]*0.5;
-    l_2[1] = l[1]*0.5;
-    l_2[2] = l[2]*0.5;
+    lx_2 = lx*0.5;
+    ly_2 = ly*0.5;
+    lz_2 = lz*0.5;
 
-    Vbox=l[0]*l[1]*l[2];
+    Vbox=lx*ly*lz;
 
-    rhoN = part.size()/Vbox;
+    rhoN = Nc/Vbox;
     rhoV = Vsys*rhoN;
 
-    WP[0] = (int)(l[0]/rlistP); 
-    WP[1] = (int)(l[1]/rlistP); 
-    WP[2] = (int)(l[2]/rlistP); 
+    WPx = (int)(lx/rlistP); 
+    WPy = (int)(ly/rlistP); 
+    WPz = (int)(lz/rlistP); 
 
-    wP[0] = WP[0]/l[0];
-    wP[1] = WP[1]/l[1];
-    wP[2] = WP[2]/l[2];
+    wPx = WPx/lx;
+    wPy = WPy/ly;
+    wPz = WPz/lz;
 	
-    headP.resize(WP[0]*WP[1]*WP[2]); 
-    usedCell.resize(WP[0]*WP[1]*WP[2],false); 
+    headP.resize(WPx*WPy*WPz); 
+    usedCell.resize(WPx*WPy*WPz,false); 
     for( int i=0; i<headP.size(); i++) headP[i] = -1;
 
-    linkP.resize(Nc+part.size()); 
+    linkP.resize(Nc*2); 
     for( int i=0; i<linkP.size(); i++) linkP[i] = -1;
 
-	s_n.resize(WP[0]);
+	s_n.resize(WPx);
 
 	s_nn[0] = 0;
 	s_nn[1] = 1;
-	s_nn[2] = WP[0]-1;
+	s_nn[2] = WPx-1;
 	s_nn[3] = 2;
-	s_nn[4] = WP[0]-2;
+	s_nn[4] = WPx-2;
 	s_n[0]=s_nn;
 
 	s_nn[0] = 1;
 	s_nn[1] = 2;
 	s_nn[2] = 0;
 	s_nn[3] = 3;
-	s_nn[4] = WP[0]-1;
+	s_nn[4] = WPx-1;
 	s_n[1]=s_nn;
 	for( int i=2; i<s_n.size()-2; i++){ 
 		s_nn[0] = i;
@@ -111,40 +113,35 @@ void read (std::string file){
 		s_n[i]=s_nn;
 	}
 
-	s_nn[0] = WP[0]-2;
-	s_nn[1] = WP[0]-1;
-	s_nn[2] = WP[0]-3;
+	s_nn[0] = WPx-2;
+	s_nn[1] = WPx-1;
+	s_nn[2] = WPx-3;
 	s_nn[3] = 0;
-	s_nn[4] = WP[0]-4;
+	s_nn[4] = WPx-4;
 
-	s_n[WP[0]-2]=s_nn;
+	s_n[WPx-2]=s_nn;
 
-	s_nn[0] = WP[0]-1;
+	s_nn[0] = WPx-1;
 	s_nn[1] = 0;
-	s_nn[2] = WP[0]-2;
+	s_nn[2] = WPx-2;
 	s_nn[3] = 1;
-	s_nn[4] = WP[0]-3;
+	s_nn[4] = WPx-3;
 
-	s_n[WP[0]-1]=s_nn;
+	s_n[WPx-1]=s_nn;
 
     for( int v = 0 ; v < Nc; v++){
-        part[v].pos.resize(3);
-        part[v].pos_msd.resize(3);
-        part[v].dist_ori.resize(3);
-	part[v].already = false;
+	already[v] = false;
 
-        iFile >> part[v].pos[0] >> part[v].pos[1] >> part[v].pos[2] >> part[v].pos_msd[0] >> part[v].pos_msd[1] >> part[v].pos_msd[2] >> part[v].trans[0][2]  >> part[v].trans[1][2] >> part[v].trans[2][2]; 
+        iFile >> posx[v] >> posy[v] >> posz[v] >> pos_msdx[v] >> pos_msdy[v] >> pos_msdz[v] >> part[v].trans[0][2]  >> part[v].trans[1][2] >> part[v].trans[2][2]; 
+        //std::cout << " " << part[v].pos[0] << " " << part[v].pos[1] << " " << part[v].pos[2] << " " << part[v].pos_msd[0] << " " << part[v].pos_msd[1] << " " << part[v].pos_msd[2] << " " << part[v].trans[0][2]  << " " << part[v].trans[1][2] << " " << part[v].trans[2][2] << std::endl;
 
-//	std::cout << part[v].pos[0] << " " << part[v].pos[1] << " " << part[v].pos[2] << " " << part[v].pos_msd[0] << " " << part[v].pos_msd[1] << " " << part[v].pos_msd[2] << " " << part[v].ori[0]  << " " << part[v].ori[1] << " " << part[v].ori[2] << std::endl;
-//	exit(0);
+	if(posx[v] < 0 ) posx[v] += lx;
+	if(posy[v] < 0 ) posy[v] += ly;
+	if(posz[v] < 0 ) posz[v] += lz;
 
-	if(part[v].pos[0] < 0 ) part[v].pos[0] += l[0];
-	if(part[v].pos[1] < 0 ) part[v].pos[1] += l[1];
-	if(part[v].pos[2] < 0 ) part[v].pos[2] += l[2];
-
-	if(step < 100) part[v].pos_msd[0] =0;
-	if(step < 100) part[v].pos_msd[1] =0;
-	if(step < 100) part[v].pos_msd[2] =0;
+	if(step < 100) pos_msdx[v] =0;
+	if(step < 100) pos_msdy[v] =0;
+	if(step < 100) pos_msdz[v] =0;
 
 	sqrtz = 1-part[v].trans[2][2]*part[v].trans[2][2];
 	if(sqrtz > 1e-5){
@@ -187,40 +184,40 @@ void read (std::string file){
 	part[v].trans[3][2] = 0;
 	part[v].trans[3][3] = 1;
 
-	part[v].dist_ori[0]= distN*part[v].trans[0][2];
-	part[v].dist_ori[1]= distN*part[v].trans[1][2];
-	part[v].dist_ori[2]= distN*part[v].trans[2][2];
+	dist_orix[v] = distN*part[v].trans[0][2];
+	dist_oriy[v] = distN*part[v].trans[1][2];
+	dist_oriz[v] = distN*part[v].trans[2][2];
 
 	NCell.resize(0);
 	NPart.resize(0);
 
-	dsx = part[v].pos[0]-part[v].dist_ori[0];
-	if(dsx < 0) part[v].s[0] = WP[0]-1;
+	dsx = posx[v]-dist_orix[v];
+	if(dsx < 0) sx[v] = WPx-1;
 	else{
-		if(dsx > l[0]) part[v].s[0] = 0;
-		else part[v].s[0] = dsx*wP[0];
+		if(dsx > lx) sx[v] = 0;
+		else sx[v] = dsx*wPx;
 	}
 
-	dsy = part[v].pos[1]-part[v].dist_ori[1];
-	if(dsy < 0) part[v].s[1] = WP[1]-1;
+	dsy = posy[v]-dist_oriy[v];
+	if(dsy < 0) sy[v] = WPy-1;
 	else{
-		if(dsy > l[1]) part[v].s[1] = 0;
-		else part[v].s[1] = dsy*wP[1];
+		if(dsy > ly) sy[v] = 0;
+		else sy[v] = dsy*wPy;
 	}
 
-	dsz = part[v].pos[2]-part[v].dist_ori[2];
-	if(dsz < 0) part[v].s[2] = WP[2]-1;
+	dsz = posz[v]-dist_oriz[v];
+	if(dsz < 0) sz[v] = WPz-1;
 	else{
-		if(dsz > l[2]) part[v].s[2] = 0;
-		else part[v].s[2] = dsz*wP[2];
+		if(dsz > lz) sz[v] = 0;
+		else sz[v] = dsz*wPz;
 	}
 
 	for (int iz=0; iz < 5 && !inside; iz++){
-		kz = WP[1]*s_n[part[v].s[2]][iz];
+		kz = WPy*s_n[sz[v]][iz];
 		for (int iy=0; iy < 5 && !inside; iy++){
-			ky = WP[0]*(s_n[part[v].s[1]][iy]+kz);
+			ky = WPx*(s_n[sy[v]][iy]+kz);
 			for (int ix=0; ix < 5 && !inside; ix++){
-				k = s_n[part[v].s[0]][ix] + ky;
+				k = s_n[sx[v]][ix] + ky;
 				if( usedCell[k] ) continue;
 
 				vv = headP[k];
@@ -228,14 +225,29 @@ void read (std::string file){
 				while(vv != -1){
 					newvv = vv;
 					if(newvv >= part.size() ) newvv -= part.size(); 
-					if(!part[newvv].already){ 
+					if(!already[newvv]){ 
 						NPart.push_back(newvv);
-						part[newvv].already=true;	
-						if (overlapP ( part[v], part[newvv], l) ){
+						already[newvv]=true;	
+						Rx = posx[newvv]-posx[v]; 
+						if (Rx > lx_2) Rx =- lx;
+						else{
+							if(Rx< -lx_2) Rx += lx;
+						}
+						Ry = posy[newvv]-posy[v]; 
+						if (Ry > ly_2) Ry =- ly;
+						else{
+							if(Ry< -ly_2) Ry += ly;
+						}
+						Rz = posz[newvv]-posz[v]; 
+						if (Rz > lz_2) Rz =- lz;
+						else{
+							if(Rz< -lz_2) Rz += lz;
+						}
+						if (overlapP ( Rx, Ry, Rz, part[v], part[newvv]) ){
 							std::cerr << "There is still a problem (" << newvv << "," << v << ")!" << std::endl;
 
-							std::cerr << "PEAR " << part[newvv].pos[0] << " " << part[newvv].pos[1] << " " << part[newvv].pos[2] << " " << part[newvv].trans[0][0] << " " << part[newvv].trans[1][0] << " " << part[newvv].trans[2][0]  << " " << part[newvv].trans[0][1] << " " << part[newvv].trans[1][1] << " " << part[newvv].trans[2][1] << " " <<  part[newvv].trans[0][2] << " " << part[newvv].trans[1][2] << " " << part[newvv].trans[2][2] << " 1" << std::endl;
-							std::cerr << "PEAR " << part[v].pos[0] << " " << part[v].pos[1] << " " << part[v].pos[2] << " " << part[v].trans[0][0] << " " << part[v].trans[1][0] << " " << part[v].trans[2][0]  << " " << part[v].trans[0][1] << " " << part[v].trans[1][1] << " " << part[v].trans[2][1] << " " <<  part[v].trans[0][2] << " " << part[v].trans[1][2] << " " << part[v].trans[2][2] << " 1" << std::endl;
+							std::cerr << "PEAR " << posx[newvv] << " " << posy[newvv] << " " << posz[newvv] << " " << part[newvv].trans[0][0] << " " << part[newvv].trans[1][0] << " " << part[newvv].trans[2][0]  << " " << part[newvv].trans[0][1] << " " << part[newvv].trans[1][1] << " " << part[newvv].trans[2][1] << " " <<  part[newvv].trans[0][2] << " " << part[newvv].trans[1][2] << " " << part[newvv].trans[2][2] << " 1" << std::endl;
+							std::cerr << "PEAR " << posx[v] << " " << posy[v] << " " << posz[v] << " " << part[v].trans[0][0] << " " << part[v].trans[1][0] << " " << part[v].trans[2][0]  << " " << part[v].trans[0][1] << " " << part[v].trans[1][1] << " " << part[v].trans[2][1] << " " <<  part[v].trans[0][2] << " " << part[v].trans[1][2] << " " << part[v].trans[2][2] << " 1" << std::endl;
 						}
 					}
 					vv = linkP[vv];
@@ -246,35 +258,35 @@ void read (std::string file){
 		}
 	}
 
-	dsxN = part[v].pos[0]+part[v].dist_ori[0];
-	if(dsxN < 0) part[v].sN[0] = WP[0]-1;
+	dsxN = posx[v]+dist_orix[v];
+	if(dsxN < 0) sNx[v] = WPx-1;
 	else{
-		if(dsxN > l[0]) part[v].sN[0] = 0;
-		else part[v].sN[0] = dsxN*wP[0];
+		if(dsxN > lz) sNx[v] = 0;
+		else sNx[v] = dsxN*wPx;
 	}
 
-	dsyN = part[v].pos[1]+part[v].dist_ori[1];
-	if(dsyN < 0) part[v].sN[1] = WP[1]-1;
+	dsyN = posy[v]+dist_oriy[v];
+	if(dsyN < 0) sNy[v] = WPy-1;
 	else{
-		if(dsyN > l[1]) part[v].sN[1] = 0;
-		else part[v].sN[1] = dsyN*wP[1];
+		if(dsyN > lz) sNy[v] = 0;
+		else sNy[v] = dsyN*wPy;
 	}
 
-	dszN = part[v].pos[2]+part[v].dist_ori[2];
-	if(dszN < 0) part[v].sN[2] = WP[2]-1;
+	dszN = posz[v]+dist_oriz[v];
+	if(dszN < 0) sNz[v] = WPz-1;
 	else{
-		if(dszN > l[2]) part[v].sN[2] = 0;
-		else part[v].sN[2] = dszN*wP[2];
+		if(dszN > lz) sNz[v] = 0;
+		else sNz[v] = dszN*wPz;
 	}
 
-	if(part[v].s[0] != part[v].sN[0] || part[v].s[1] != part[v].sN[1] || part[v].s[2] != part[v].sN[2] ){
+	if(sx[v] != sNx[v] || sy[v] != sNy[v] || sz[v] != sNz[v] ){
 		for (int iz=0; iz < 5 && !inside; iz++){
-			kz = WP[1]*s_n[MovedParticle.sN[2]][iz];
+			kz = WPy*s_n[sNz[v]][iz];
 			for (int iy=0; iy < 5 && !inside; iy++){
-				ky = WP[0]*(s_n[MovedParticle.sN[1]][iy]+kz);
+				ky = WPx*(s_n[sNy[v]][iy]+kz);
 				for (int ix=0; ix < 5 && !inside; ix++){
 
-					k = s_n[MovedParticle.sN[0]][ix] + ky;
+					k = s_n[sNx[v]][ix] + ky;
 					if( usedCell[k] ) continue;
 
 					vv = headP[k];
@@ -282,15 +294,29 @@ void read (std::string file){
 					while(vv != -1){
 						newvv = vv;
 						if(newvv >= part.size() ) newvv -= part.size(); 
-						if(!part[newvv].already){ 
+						if(!already[newvv]){ 
 							NPart.push_back(newvv);
-							part[newvv].already=true;	
-							if (overlapP ( part[v], part[newvv], l) ){
+							already[newvv]=true;	
+							Rx = posx[newvv]-posx[v]; 
+							if (Rx > lx_2) Rx =- lx;
+							else{
+								if(Rx< -lx_2) Rx += lx;
+							}
+							Ry = posy[newvv]-posy[v]; 
+							if (Ry > ly_2) Ry =- ly;
+							else{
+								if(Ry< -ly_2) Ry += ly;
+							}
+							Rz = posz[newvv]-posz[v]; 
+							if (Rz > lz_2) Rz =- lz;
+							else{
+								if(Rz< -lz_2) Rz += lz;
+							}
+							if (overlapP ( Rx, Ry, Rz, part[v], part[newvv]) ){
 								std::cerr << "There is still a problem (" << newvv << "," << v << ")!" << std::endl;
 
-								std::cerr << "PEAR " << part[newvv].pos[0] << " " << part[newvv].pos[1] << " " << part[newvv].pos[2] << " " << part[newvv].trans[0][0] << " " << part[newvv].trans[1][0] << " " << part[newvv].trans[2][0]  << " " << part[newvv].trans[0][1] << " " << part[newvv].trans[1][1] << " " << part[newvv].trans[2][1] << " " <<  part[newvv].trans[0][2] << " " << part[newvv].trans[1][2] << " " << part[newvv].trans[2][2] << " 1" << std::endl;
-
-								std::cerr << "PEAR " << part[v].pos[0] << " " << part[v].pos[1] << " " << part[v].pos[2] << " " << part[v].trans[0][0] << " " << part[v].trans[1][0] << " " << part[v].trans[2][0]  << " " << part[v].trans[0][1] << " " << part[v].trans[1][1] << " " << part[v].trans[2][1] << " " <<  part[v].trans[0][2] << " " << part[v].trans[1][2] << " " << part[v].trans[2][2] << " 1" << std::endl;
+							std::cerr << "PEAR " << posx[newvv] << " " << posy[newvv] << " " << posz[newvv] << " " << part[newvv].trans[0][0] << " " << part[newvv].trans[1][0] << " " << part[newvv].trans[2][0]  << " " << part[newvv].trans[0][1] << " " << part[newvv].trans[1][1] << " " << part[newvv].trans[2][1] << " " <<  part[newvv].trans[0][2] << " " << part[newvv].trans[1][2] << " " << part[newvv].trans[2][2] << " 1" << std::endl;
+							std::cerr << "PEAR " << posx[v] << " " << posy[v] << " " << posz[v] << " " << part[v].trans[0][0] << " " << part[v].trans[1][0] << " " << part[v].trans[2][0]  << " " << part[v].trans[0][1] << " " << part[v].trans[1][1] << " " << part[v].trans[2][1] << " " <<  part[v].trans[0][2] << " " << part[v].trans[1][2] << " " << part[v].trans[2][2] << " 1" << std::endl;
 							}
 						}
 						vv = linkP[vv];
@@ -300,21 +326,21 @@ void read (std::string file){
 		}
 	}
 
-	for( vv = 0; vv < NPart.size(); vv++) part[NPart[vv]].already=false;
+	for( vv = 0; vv < NPart.size(); vv++) already[NPart[vv]]=false;
 	for( vv = 0; vv < NCell.size(); vv++) usedCell[NCell[vv]]=false;
 
-	int k = part[v].s[0] + WP[0]*(part[v].s[1]+WP[1]*part[v].s[2]); 
+	int k = sx[v] + WPx*(sy[v]+WPy*sz[v]); 
 
-	part[v].cell = k;
+	cell[v] = k;
 	if(headP[k]==-1) headP[k] = v;
 	else{
 	   linkP[v] = headP[k];
 	   headP[k] = v; 
 	}
 
-	k = part[v].sN[0] + WP[0]*(part[v].sN[1]+WP[1]*part[v].sN[2]); 
+	k = sNx[v] + WPx*(sNy[v]+WPy*sNz[v]); 
 
-	part[v].cellN = k;
+	cellN[v] = k;
 	v += part.size();
 	if(headP[k]==-1) headP[k] = v;
 	else{
@@ -326,13 +352,13 @@ void read (std::string file){
     iFile.close();
 }
 
-void writeLog (std::string file){
+void writeLog (){
 
-    std::fstream fFile (file.c_str(), std::fstream::app );
+    fFile.open(logfile.c_str(), std::fstream::app );
 
     msd = 0;
 
-    for( int v = 0 ; v < Nc; v++) msd += part[v].pos_msd[0]*part[v].pos_msd[0]+part[v].pos_msd[1]*part[v].pos_msd[1] + part[v].pos_msd[2]*part[v].pos_msd[2];
+    for( int v = 0 ; v < Nc; v++) msd += pos_msdx[v]*pos_msdx[v]+pos_msdy[v]*pos_msdy[v] + pos_msdz[v]*pos_msdz[v];
     msd = msd/Nc;
     
     fFile << step << "\t" << msd << std::endl;

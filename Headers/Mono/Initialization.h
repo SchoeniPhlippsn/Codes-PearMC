@@ -11,11 +11,32 @@ void Init(){
 
     	std::cout << "V_c="<< Vsys << std::endl;
 
-    	Vsys = Nc*Vsys;
 
     	N = Nc + Ns;
+    	std::cout << "N="<< N << " " << Nc << " " << Ns << std::endl;
 
-    	Vsys /= N;
+	posx = (double*)calloc(Nc,sizeof(double));
+	posy = (double*)calloc(Nc,sizeof(double));
+	posz = (double*)calloc(Nc,sizeof(double));
+
+	dist_orix = (double*)calloc(Nc,sizeof(double));
+	dist_oriy = (double*)calloc(Nc,sizeof(double));
+	dist_oriz = (double*)calloc(Nc,sizeof(double));
+
+	pos_msdx = (double*)calloc(Nc,sizeof(double));
+	pos_msdy = (double*)calloc(Nc,sizeof(double));
+	pos_msdz = (double*)calloc(Nc,sizeof(double));
+
+
+	cell = (int*)calloc(Nc,sizeof(int));
+	cellN = (int*)calloc(Nc,sizeof(int));
+	sx = (int*)calloc(Nc,sizeof(int));
+	sy = (int*)calloc(Nc,sizeof(int));
+	sz = (int*)calloc(Nc,sizeof(int));
+	sNx = (int*)calloc(Nc,sizeof(int));
+	sNy = (int*)calloc(Nc,sizeof(int));
+	sNz = (int*)calloc(Nc,sizeof(int));
+	already = (bool*)calloc(Nc,sizeof(bool));
 
 	gen.seed(seed);
 
@@ -23,7 +44,7 @@ void Init(){
 
 	for (int i=0; i<2; i++){
 		file_pre = "Meshes/Pear" + ASP + "-" + KTH + ".inp";
-		std::ifstream iFile(file_pre.c_str());
+		iFile.open(file_pre.c_str());
 
 		if(!iFile){
 			std::cerr << "The file " << file_pre << " is missing!" << std::endl;
@@ -63,7 +84,7 @@ void Init(){
 	}
 
 	file_pre = "Meshes/Bezier" + ASP + "-" + KTH + ".txt";
-	std::ifstream iFile(file_pre.c_str());
+	iFile.open(file_pre.c_str());
 	if(!iFile){
 		std::cerr << "The file " << file_pre << " is missing!" << std::endl;
 		exit(-1);
@@ -88,15 +109,12 @@ void Init(){
 
 	rlistP = 0.5*(sqrt(3*b1*b1-2*b1*max_x+3*max_x*max_x)-b1+max_x);
 	distN = b1-rlistP;
-	maxpos = 2*rlistP;
+	maxpos = rlistP;
 
 	std::cout << "rlist " << rlistP << std::endl;
 
 	
-	
-	ln.resize(3);
-    
-	savefile = "Save/Config.dat";
+	savefile = "Save/Config" + RHO + ".dat";
 
 	iFile.open(savefile.c_str());
 	if(!iFile){
@@ -106,25 +124,19 @@ void Init(){
 	iFile.close();
 
 
-	logfile = "Results/Log_Nc" + NC + "_Ns"+ NS + "_Vr" + VR + "_rho" + RHO + ".dat";
+	logfile = "Results/rho" + RHO + "/Log_Nc" + NC + "_Ns"+ NS + "_Vr" + VR + "_rho" + RHO + ".dat";
 
-    	std::ifstream DatFile(logfile.c_str() );
-	if(!DatFile){ 
-    		std::ofstream DataFile(logfile.c_str() );
-		DataFile << "step\tmsdP" << std::endl;
-		DataFile.close();
+    	iFile.open(logfile.c_str() );
+	if(!iFile){ 
+    		oFile.open(logfile.c_str() );
+		oFile << "step\tmsdP" << std::endl;
+		oFile.close();
 	}
-	DatFile.close();
-
-    	l.resize(3);
-    	l_2.resize(3);
-
+	iFile.close();
 
         initCompress=false;
 
-    	WP.resize(3,0); 
-    	wP.resize(3,0); 
-        read(savefile);
+        read();
 
     	RenewList();
 }

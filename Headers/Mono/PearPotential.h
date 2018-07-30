@@ -1,13 +1,13 @@
 void overlapPear (){
 	
-	Rsq = R[0]*R[0]+R[1]*R[1]+R[2]*R[2];
+	Rsq = Rx*Rx+Ry*Ry+Rz*Rz;
     
 	if(Rsq < rcut_P){
-        	rw = MovedParticle.trans[0][2]*R[0] + MovedParticle.trans[1][2]*R[1] + MovedParticle.trans[2][2]*R[2];
+        	rw = MovedParticle.trans[0][2]*Rx + MovedParticle.trans[1][2]*Ry + MovedParticle.trans[2][2]*Rz;
        
 		rwT = Rsq - rw*rw;
 		if( rwT < rcut_P_T ){
-			rw1 = part[newvv].trans[0][2]*R[0] + part[newvv].trans[1][2]*R[1] + part[newvv].trans[2][2]*R[2];
+			rw1 = part[newvv].trans[0][2]*Rx + part[newvv].trans[1][2]*Ry + part[newvv].trans[2][2]*Rz;
 	       
 			rwT = Rsq - rw1*rw1;
 
@@ -17,14 +17,12 @@ void overlapPear (){
 				www = 1 - ww*ww;
 				if( www < 1e-4){ 
 					if(rwT < rcut_P_II){
-						part[newvv].trans[0][3] = R[0];	
-						part[newvv].trans[1][3] = R[1];	
-						part[newvv].trans[2][3] = R[2];	
+						part[newvv].trans[0][3] = Rx;	
+						part[newvv].trans[1][3] = Ry;	
+						part[newvv].trans[2][3] = Rz;	
 
 
 						pear_mesh.UpdateTrans(id[1], part[newvv].trans);
-
-						VCReport report;
 
 						pear_mesh.Collide( &report );
 
@@ -61,14 +59,12 @@ void overlapPear (){
 					
 					rwT = Rsq + xlambda*xlambda +xmu*xmu + 2*(xmu*rw1-xlambda*(rw+xmu*ww));
 					if(rwT < rcut_P_II){
-						part[newvv].trans[0][3] = R[0];	
-						part[newvv].trans[1][3] = R[1];	
-						part[newvv].trans[2][3] = R[2];	
+						part[newvv].trans[0][3] = Rx;	
+						part[newvv].trans[1][3] = Ry;	
+						part[newvv].trans[2][3] = Rz;	
 
 
 						pear_mesh.UpdateTrans(id[1], part[newvv].trans);
-
-						VCReport report;
 
 						pear_mesh.Collide( &report );
 
@@ -84,46 +80,17 @@ void overlapPear (){
 	}
 }
 
-bool overlapP ( class teilchen pear1, class teilchen pear2, std::vector<double> l){
+bool overlapP ( double rx, double ry,  double rz, class teilchen pear1, class teilchen pear2){
 	
-	std::vector<double> r (3);
 	double r2;
-	
-	r[0] = pear2.pos[0] - pear1.pos[0]; // boundary correction
-	if (r[0] > l[0]*0.5){  
-		r[0] -= l[0];
-	}else{ 
-		if (r[0] < -l[0]*0.5){  
-			r[0] += l[0];
-		}
-	}
-
-	r[1] = pear2.pos[1] - pear1.pos[1]; // boundary correction
-	if (r[1] > l[1]*0.5){  
-		r[1] -= l[1];
-	}else{ 
-		if (r[1] < -l[1]*0.5){ 
-			r[1] += l[1];
-		}
-	}
-
-	r[2] = pear2.pos[2] - pear1.pos[2]; // boundary correction
-	if (r[2] > l[2]*0.5){  
-		r[2] -= l[2];
-	}else{ 
-		if (r[2] < -l[2]*0.5){ 
-			r[2] += l[2];
-		}
-	}
-
-	r2 = r[0]*r[0] + r[1]*r[1] + r[2]*r[2];
+	r2 = rx*rx + ry*ry + rz*rz;
     
     	if(r2 > rcut_P) return false;
     	else{
 
-		pear2.trans[0][3] = r[0];	
-		pear2.trans[1][3] = r[1];	
-		pear2.trans[2][3] = r[2];	
+		pear2.trans[0][3] = rx;	
+		pear2.trans[1][3] = ry;	
+		pear2.trans[2][3] = rz;	
 		pear_mesh.UpdateTrans(id[1], pear2.trans);
 		pear_mesh.UpdateTrans(id[0], pear1.trans);
 

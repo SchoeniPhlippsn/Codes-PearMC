@@ -1,36 +1,36 @@
 void RenewList(){ // Initialise Neighbour List
 
-	WP[0] = (int)(l[0]/rlistP); 
-	WP[1] = (int)(l[1]/rlistP); 
-	WP[2] = (int)(l[2]/rlistP); 
+	WPx = (int)(lx/rlistP); 
+	WPy = (int)(ly/rlistP); 
+	WPz = (int)(lz/rlistP); 
 
-	std::cout << WP[0] << "|" << WP[1] << "|" << WP[2] << std::endl;
+	std::cout << WPx << "|" << WPy << "|" << WPz << std::endl;
 
-	wP[0] = WP[0]/l[0];
-	wP[1] = WP[1]/l[1];
-	wP[2] = WP[2]/l[1];
+	wPx = WPx/lx;
+	wPy = WPy/ly;
+	wPz = WPz/lz;
 	
-	headP.resize(WP[0]*WP[1]*WP[2]); 
-	usedCell.resize(WP[0]*WP[1]*WP[2],false); 
+	headP.resize(WPx*WPy*WPz); 
+	usedCell.resize(WPx*WPy*WPz,false); 
 	for( int i=0; i<headP.size(); i++) headP[i] = -1;
 
-	linkP.resize(Nc+part.size()); 
+	linkP.resize(2*Nc); 
 	for( int i=0; i<linkP.size(); i++) linkP[i] = -1;
 
-	s_n.resize(WP[0]);
+	s_n.resize(WPx);
 
 	s_nn[0] = 0;
 	s_nn[1] = 1;
-	s_nn[2] = WP[0]-1;
+	s_nn[2] = WPx-1;
 	s_nn[3] = 2;
-	s_nn[4] = WP[0]-2;
+	s_nn[4] = WPx-2;
 	s_n[0]=s_nn;
 
 	s_nn[0] = 1;
 	s_nn[1] = 2;
 	s_nn[2] = 0;
 	s_nn[3] = 3;
-	s_nn[4] = WP[0]-1;
+	s_nn[4] = WPx-1;
 	s_n[1]=s_nn;
 	for( int i=2; i<s_n.size()-2; i++){ 
 		s_nn[0] = i;
@@ -42,84 +42,85 @@ void RenewList(){ // Initialise Neighbour List
 		s_n[i]=s_nn;
 	}
 
-	s_nn[0] = WP[0]-2;
-	s_nn[1] = WP[0]-1;
-	s_nn[2] = WP[0]-3;
+	s_nn[0] = WPx-2;
+	s_nn[1] = WPx-1;
+	s_nn[2] = WPx-3;
 	s_nn[3] = 0;
-	s_nn[4] = WP[0]-4;
+	s_nn[4] = WPx-4;
 
-	s_n[WP[0]-2]=s_nn;
+	s_n[WPx-2]=s_nn;
 
-	s_nn[0] = WP[0]-1;
+	s_nn[0] = WPx-1;
 	s_nn[1] = 0;
-	s_nn[2] = WP[0]-2;
+	s_nn[2] = WPx-2;
 	s_nn[3] = 1;
-	s_nn[4] = WP[0]-3;
+	s_nn[4] = WPx-3;
 
-	s_n[WP[0]-1]=s_nn;
+	s_n[WPx-1]=s_nn;
 
 
 	for( int i=0; i<Nc; i++){
-		dsx = part[i].pos[0]-part[i].dist_ori[0];
-		if(dsx < 0) part[i].s[0]= WP[0]-1;
+
+		dsx = posx[i]-dist_orix[i];
+		if(dsx < 0) sx[i]= WPx-1;
 		else{
-			part[i].s[0] = dsx*wP[0];
-			if(part[i].s[0]>WP[0]-1) part[i].s[0] = 0; 
+			sx[i] = dsx*wPx;
+			if(sx[i]>WPx-1) sx[i] = 0; 
 		}
 
-		dsy = part[i].pos[1]-part[i].dist_ori[1];
-		if(dsy < 0) part[i].s[1]= WP[1]-1;
+		dsy = posy[i]-dist_oriy[i];
+		if(dsy < 0) sy[i]= WPy-1;
 		else{
-			part[i].s[1] = dsy*wP[1];
-			if(part[i].s[1]>WP[1]-1) part[i].s[1] = 0; 
+			sy[i] = dsy*wPy;
+			if(sy[i]>WPy-1) sy[i] = 0; 
 		}
 
-		dsz = part[i].pos[2]-part[i].dist_ori[2];
-		if(dsz < 0) part[i].s[2]= WP[2]-1;
+		dsz = posz[i]-dist_oriz[i];
+		if(dsz < 0) sz[i]= WPz-1;
 		else{
-			part[i].s[2] = dsz*wP[2];
-			if(part[i].s[2]>WP[2]-1) part[i].s[2] = 0; 
+			sz[i] = dsz*wPz;
+			if(sz[i]>WPz-1) sz[i] = 0; 
 		}
 
-		k = part[i].s[0] + WP[0]*(part[i].s[1]+WP[1]*part[i].s[2]); 
+		k = sx[i] + WPx*(sy[i]+WPy*sz[i]); 
 
-		part[i].cell = k;
+		cell[i] = k;
 		if(headP[k]==-1) headP[k] = i;
 		else{
 		   linkP[i] = headP[k];
 		   headP[k] = i; 
 		}
 
-		dsx = part[i].pos[0]+part[i].dist_ori[0];
-		if(dsx < 0) part[i].sN[0]= WP[0]-1;
+		dsx = posx[i]+dist_orix[i];
+		if(dsx < 0) sNx[i] = WPx-1;
 		else{
-			part[i].sN[0] = dsx*wP[0];
-			if(part[i].sN[0]>WP[0]-1) part[i].sN[0] = 0;
+			sNx[i] = dsx*wPx;
+			if(sNx[i]>WPx-1) sNx[i] = 0;
 		}
 
-		dsy = part[i].pos[1]+part[i].dist_ori[1];
-		if(dsy < 0) part[i].sN[1]= WP[1]-1;
+		dsy = posy[i]+dist_oriy[i];
+		if(dsy < 0) sNy[i] = WPy-1;
 		else{
-			part[i].sN[1] = dsy*wP[1];
-			if(part[i].sN[1]>WP[1]-1) part[i].sN[1] = 0; 
+			sNy[i] = dsy*wPy;
+			if(sNy[i]>WPy-1) sNy[i] = 0;
 		}
 
-		dsz = part[i].pos[2]+part[i].dist_ori[2];
-		if(dsz < 0) part[i].sN[2]= WP[2]-1;
+		dsz = posz[i]+dist_oriz[i];
+		if(dsz < 0) sNz[i] = WPz-1;
 		else{
-			part[i].sN[2] = dsz*wP[2];
-			if(part[i].sN[2]>WP[2]-1) part[i].sN[2] = 0; 
+			sNz[i] = dsz*wPz;
+			if(sNz[i]>WPz-1) sNz[i] = 0;
 		}
 
-		k = part[i].sN[0] + WP[0]*(part[i].sN[1]+WP[1]*part[i].sN[2]); 
+		k = sNx[i] + WPx*(sNy[i]+WPy*sNz[i]); 
 
-		part[i].cellN = k;
-		i += part.size();
+		cellN[i] = k;
+		i+=Nc;
 		if(headP[k]==-1) headP[k] = i;
 		else{
 		   linkP[i] = headP[k];
 		   headP[k] = i; 
 		}
-		i -= part.size();
+		i-=Nc;
 	}
 };

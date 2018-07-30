@@ -21,14 +21,13 @@ boost::random::uniform_01<> uni;
 
 int main(int argc, char** argv){
 
-	Nc=2; //# of spherocylinder
-	Ns=1298; //# of spheres
+	Nc=380; //# of spherocylinder
+	Ns=0; //# of spheres
 	seed=42;
 	rho0=0.6; //density
 	pos_lambda = 0.02;
 	ori_lambda = 0.02;
 	vproc = 0.99;
-    	l.resize(3);
     	Vratio = 0.005;
 	finstep = 100000000;
 	compstep = 100;
@@ -76,44 +75,59 @@ int main(int argc, char** argv){
     	step++;
 
     	acc = 0;   
-	file_pre = "Results/Config_Nc" + NC + "_Ns"+ NS + "_Vr" + VR + "_rho" + RHO + "_step";
+	file_pre = "Results/rho" + RHO + "/Config_Nc" + NC + "_Ns"+ NS + "_Vr" + VR + "_rho" + RHO + "_step";
+	std::string newname = "Save/ConfigB" + RHO + ".dat";
+
+	sstep = step % savestep;
+	lstep = step % logstep;
+	bstep = step % backupstep;
+
+	double logstepN = 1.0/(logstep*N);
     	while(step <= finstep){
 
         	Move_step();
-	        if(step % 100 == 0){          
-			if(step % savestep == 0){          
-				std::string file_name = file_pre + toString(step) + ".dat";
-				write(file_name,0);
+	        //if(step % 100 == 0){          
+			//if(step % savestep == 0){          
+			if(sstep == savestep ){          
+				file_name = file_pre + toString(step) + ".dat";
+				writeConfig();
+				sstep=0;
 			}
-			if(step % logstep == 0) writeLog(logfile);
-			if(step % backupstep == 0){ 
+			if(lstep == logstep){ 
+				writeLog();
+				lstep =0;
+
+				acceptance = acc*logstepN;
+				std::cout <<  step << " " << acceptance << std::endl;
+				if (acceptance > 0.55){
+				    pos_lambda += 0.01;
+				    if( pos_lambda > maxpos) pos_lambda = maxpos;
+				    ori_lambda += 0.01;
+				    if( ori_lambda > maxpos) ori_lambda = maxpos;
+				}else{
+					if (acceptance < 0.45){
+					    pos_lambda -= 0.001;
+					    if( pos_lambda < 0.005 ) pos_lambda = 0.005;
+					    ori_lambda -= 0.001;
+					    if( ori_lambda < 0.005 ) ori_lambda = 0.005;
+					}
+				}
+				acc=0;
+			}
+			if(bstep == backupstep){ 
 				
-				std::string newname = "Save/ConfigB.dat";
-
 				rename(savefile.c_str(),newname.c_str());
-
-				write(savefile,1);
+				writeSave();
+				bstep=0;
 			}
 
-           		acceptance = static_cast<double>(acc)/(100*N);
-			std::cout <<  step << " " << acceptance << std::endl;
-			if (acceptance > 0.55){
-			    pos_lambda += 0.01;
-			    if( pos_lambda > maxpos) pos_lambda = maxpos;
-			    ori_lambda += 0.01;
-			    if( ori_lambda > maxpos) ori_lambda = maxpos;
-			}
-			if (acceptance < 0.45){
-			    pos_lambda -= 0.001;
-			    if( pos_lambda < 0.005 ) pos_lambda = 0.005;
-			    ori_lambda -= 0.001;
-			    if( ori_lambda < 0.005 ) ori_lambda = 0.005;
-			}
-            		acc=0;
-        	}
-		if(step % compstep == 0 && WallMove) Compression_step();
+        	//}
+//		if(step % compstep == 0 && WallMove) Compression_step();
         	step++;
+        	lstep++;
+        	bstep++;
+        	sstep++;
 	}
-    	write("Results/finaldat",1);
+	writeSave();
 
 }

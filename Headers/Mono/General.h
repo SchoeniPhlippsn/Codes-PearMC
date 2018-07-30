@@ -18,9 +18,9 @@ long N; //# of particles
 long seed;
 long finstep;
 long compstep;
-long savestep;
-long logstep;
-long backupstep;
+long savestep, sstep;
+long logstep, lstep;
+long backupstep, bstep;
 long acc;
 double rho0, rhoInit;
 double norm;
@@ -29,9 +29,9 @@ double Vn;
 double powVn;
 double pos_lambda;
 double ori_lambda;
+double rand_lambda;
 double vproc;
-double dr, r;
-std::vector<double> rij;
+double r;
 int randP, ky, kz;
 int zahl, zahl1;
 double acceptance;
@@ -54,7 +54,7 @@ double dszN;
 std::vector<std::vector<int> > s_n;
 std::vector<int> s_nn (5);
 
-std::vector<double> ln;
+double lxn,lyn,lzn;
 
 bool inside, in_test;
 bool Compressing;
@@ -76,29 +76,63 @@ std::string ASP;
 
 VCollide pear_mesh;
 int id[2];
+VCReport report;
 std::vector<int> NCell;
 std::vector<int> NPart;
 
 class teilchen{
     public:
         
-    std::vector<double> pos;       	// position of the particle
-    std::vector<double> dist_ori;      	// orientation of the particle
-    std::vector<double> pos_msd;       	// position of the particle
     double trans[4][4];
-    int cell;
-    int s[3];
-    int cellN;
-    int sN[3];
-    bool already;
-
         private:
 };
 
+double newposx;       	// position of the particle
+double newposy;       	// position of the particle
+double newposz;       	// position of the particle
+double newdist_orix;      	// orientation of the particle
+double newdist_oriy;      	// orientation of the particle
+double newdist_oriz;      	// orientation of the particle
+double newpos_msdx;       	// position of the particle
+double newpos_msdy;       	// position of the particle
+double newpos_msdz;       	// position of the particle
+int newcell;
+int newsx;
+int newsy;
+int newsz;
+int newcellN;
+int newsNx;
+int newsNy;
+int newsNz;
+
+double *posx;       	// position of the particle
+double *posy;       	// position of the particle
+double *posz;       	// position of the particle
+double *dist_orix;      	// orientation of the particle
+double *dist_oriy;      	// orientation of the particle
+double *dist_oriz;      	// orientation of the particle
+double *pos_msdx;       	// position of the particle
+double *pos_msdy;       	// position of the particle
+double *pos_msdz;       	// position of the particle
+int *cell;
+int *sx;
+int *sy;
+int *sz;
+int *cellN;
+int *sNx;
+int *sNy;
+int *sNz;
+bool *already;
+
+
+std::ifstream iFile;
+std::ofstream oFile;
+std::fstream fFile;
+
 
 std::vector<teilchen> part;       
-std::vector<double> l;
-std::vector<double> l_2;
+double lx,ly,lz;
+double lx_2,ly_2,lz_2;
 double rhoN;
 double rhoV;
 double Vbox;
@@ -108,25 +142,39 @@ int Ns;
 double msd;
 std::vector<int> headP;
 std::vector<int> linkP;
-std::vector<int> WP;
-std::vector<double> wP;
+int WPx;
+int WPy;
+int WPz;
+double wPx;
+double wPy;
+double wPz;
 std::vector<bool> usedCell;
 int step;
-void write(std::string, bool);
-void read(std::string);
-void writeLog(std::string);
 	                                                     
 class teilchen MovedParticle;
 
 int num_tri;
 double max_x, max_z;
 
-std::vector<double> R (3);
+double Rx,Ry,Rz;
 double Rsq, rw, rwT, rw1, ww, www, wwww;
 double xlambda, xmu; 
 
 
-#include "Functions.h"
+template<class T>
+inline std::string toString(const T& t){
+	std::ostringstream os;
+	os << t;
+  	return os.str();
+}
+
+template<class T>
+inline T fromString(const std::string& s){
+	T t;
+	std::istringstream is(s);
+	is >> t;
+	return t;
+}
 #include "PearPotential.h"
 #include "System.h"
 //hardWalls main
